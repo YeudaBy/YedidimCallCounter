@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ספירת שיחות</string>
+    <string name="calls">שיחות</string>
+    <string name="only_from_15_seconds_duration">החל מ15 שניות בלבד</string>
+    <string name="stats">נתונים</string>
+    <string name="last_hour">בשעה האחרונה</string>
+    <string name="today">יום זה</string>
+    <string name="this_week">שבוע זה</string>
+    <string name="filters">מסננים</string>
+    <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת</string>
+    <string name="permission_button">נו נו... בסדר</string>
+    <string name="call_types">סוגי שיחות:</string>
+    <string name="incoming">נכנסות</string>
+    <string name="outgoing">יוצאות</string>
+    <string name="missed">לא נענו</string>
+    <string name="duration">אורך:  %1$s</string>
+    <string name="last_2_hours">בשעתיים האחרונות</string>
+    <string name="last_day">ביום האחרון</string>
+    <string name="last_2_days">ביומיים האחרונים</string>
+    <string name="last_week">בשבוע האחרון</string>
+    <string name="last_2_weeks">בשבועיים האחרונים</string>
+    <string name="last_month">בחודש האחרון</string>
+    <string name="app_version">גרסת האפליקציה: %1$s</string>
+    <string name="app_description">האפליקציה הזו תספור את השיחות שלכם מ/אל מוקד ידידים. תוכלו לסנן את השיחות לפי סוגים, להציג את הנתונים לפי זמנים ועוד. המספרים הנספרים הם: 1230 ו 0533131310</string>
+    <string name="app_author">נוצר על ידי יהודה א. בורודיאנסקי ממוקד ירושלים :)</string>
+    <string name="app_author_email">לחצו כאן על מנת לשלוח לי מייל:</string>
+    <string name="app_author_site">לחצו כאן למעבר לאתר שלי:</string>
+    <string name="app_github">הקוד של האפליקציה מאוחסן בגיאהטב. לחצו כאן להצגה.</string>
+    <string name="info">מידע</string>
+</resources>

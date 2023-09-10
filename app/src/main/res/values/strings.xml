@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Calls Counter</string>
+    <string name="calls">Calls</string>
+    <string name="only_from_15_seconds_duration">Only from 15 seconds duration</string>
+    <string name="stats">Statistics</string>
+    <string name="last_hour">Last hour</string>
+    <string name="today">Today</string>
+    <string name="this_week">This week</string>
+    <string name="filters">Filters</string>
+    <string name="permission_request">We need to read your calls log to count your calls</string>
+    <string name="permission_button">Well... ok</string>
+    <string name="call_types">"Call Types: "</string>
+    <string name="incoming">Incoming</string>
+    <string name="outgoing">Outgoing</string>
+    <string name="missed">missed</string>
+    <string name="duration">Duration: %1$s</string>
+    <string name="last_2_hours">Last two hours</string>
+    <string name="last_day">Last day</string>
+    <string name="last_2_days">Last two days</string>
+    <string name="last_week">Last week</string>
+    <string name="last_2_weeks">Last two weeks</string>
+    <string name="last_month">Last month</string>
+    <string name="app_version">App version: %1$s</string>
+    <string name="app_description">This app will count your calls to/from Yedidim call center. You can filter by call type, display your statics and more. the numbers that counts are: 1230 and 0533131310.</string>
+    <string name="app_author">Created by Yeuda A. Borodyanski - Jerusalem :)</string>
+    <string name="app_author_email">Click here to send me an email:</string>
+    <string name="app_author_email_address" translatable="false">YeudaBorodyanski@gmail.com</string>
+    <string name="app_author_site">Click here to open my website:</string>
+    <string name="app_author_site_address" translatable="false">https://yeudaby.com</string>
+    <string name="app_github_address" translatable="false">https://github.com/YeudaBy/YedidimCallCounter</string>
+    <string name="app_github">The app source code hosted here on GitHub.</string>
+    <string name="info">Info</string>
+</resources>
