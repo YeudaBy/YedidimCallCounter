@@ -15,7 +15,7 @@
     <string name="missed">missed</string>
     <string name="duration">Duration: %1$s</string>
     <string name="last_2_hours">Last two hours</string>
-    <string name="last_day">Last day</string>
+    <string name="last_day">Last 24 hours</string>
     <string name="last_2_days">Last two days</string>
     <string name="last_week">Last week</string>
     <string name="last_2_weeks">Last two weeks</string>
@@ -30,4 +30,11 @@
     <string name="app_github_address" translatable="false">https://github.com/YeudaBy/YedidimCallCounter</string>
     <string name="app_github">The app source code hosted here on GitHub.</string>
     <string name="info">Info</string>
+    <string name="start_of_hour">Start of the hour</string>
+    <string name="start_of_day">Start of the day</string>
+    <string name="start_of_week">Start of the week</string>
+    <string name="start_of_month">Start of the month</string>
+    <string name="longest_call">Longest call</string>
+    <string name="total_duration_day">Total duration from the start of the day:</string>
+    <string name="total_duration_week">Total duration from start of the week:</string>
 </resources>

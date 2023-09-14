@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "718346160824",
+    "project_id": "call-counter-af00f",
+    "storage_bucket": "call-counter-af00f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718346160824:android:d2408d3ada07a85b7c024d",
+        "android_client_info": {
+          "package_name": "com.yeudaby.callscounter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWIJmu_a14OWqUqcVqHQmnC6rS9Z3t1Cs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

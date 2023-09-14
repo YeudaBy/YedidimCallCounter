@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.yeudaby.callscounter.screens.InfoScreen
 import com.yeudaby.callscounter.screens.counterScreen.CounterScreen
 import com.yeudaby.callscounter.screens.mainScreen.MainScreen
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
 
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
 
+        FirebaseApp.initializeApp(this)
 
         setContent {
             CallsCounterTheme {
@@ -55,7 +57,9 @@ class MainActivity : ComponentActivity() {
                     exit = fadeOut() + shrinkOut()
                 ) {
                     PermissionScreen {
-                        navController.navigate("home")
+                        navController.navigate("home") {
+                            popUpTo("permissionScreen") { inclusive = true }
+                        }
                     }
                 }
             }

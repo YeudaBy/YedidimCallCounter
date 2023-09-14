@@ -30,15 +30,15 @@ fun InfoScreen(back: () -> Boolean) {
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .border(
-                            0.dp,
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.shapes.extraLarge
-                        )
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                        .padding(24.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .border(
+                    0.dp,
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.shapes.extraLarge
+                )
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
+                .padding(24.dp)
         ) {
 
             Text(

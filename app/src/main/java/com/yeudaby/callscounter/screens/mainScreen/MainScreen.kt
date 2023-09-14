@@ -1,5 +1,8 @@
 package com.yeudaby.callscounter.screens.mainScreen
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -12,12 +15,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,16 +45,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yeudaby.callscounter.R
 import com.yeudaby.callscounter.data.model.CallLogEntry
 import com.yeudaby.callscounter.data.model.CallType
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -63,28 +72,39 @@ fun MainScreen(
     navigateToInfo: () -> Unit,
 ) {
     val context = LocalContext.current
-    LaunchedEffect(key1 = Unit) { viewModel.init(context) }
-
-    val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(key1 = Unit) {
         while (true) {
-            viewModel.refresh(context)
+            viewModel.init(context)
             kotlinx.coroutines.delay(3_000)
         }
     }
 
+    val uiState by viewModel.uiState.collectAsState()
 
     Column {
         TopAppBar(
             title = { Text(text = stringResource(R.string.app_name)) },
+            navigationIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.horizontal_logo),
+                    contentDescription = stringResource(R.string.app_name),
+                    modifier = Modifier
+                        .clickable {
+                            navigateToInfo()
+                        }
+                        .padding(4.dp)
+                        .size(62.dp)
+                )
+            },
             actions = {
                 Icon(
                     imageVector = Icons.Rounded.Info,
                     contentDescription = stringResource(R.string.info),
-                    modifier = Modifier.clickable {
-                        navigateToInfo()
-                    }.padding(8.dp)
+                    modifier = Modifier
+                        .clickable {
+                            navigateToInfo()
+                        }
+                        .padding(8.dp)
                 )
             }
         )
@@ -123,9 +143,40 @@ fun MainScreen(
 fun Stats(
     viewModel: MainScreenViewModel
 ) {
-    LazyColumn {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
-        items(items = viewModel.getStats().filter {
+    fun shareImage(imageBitmap: ImageBitmap) {
+        val cachePath = File(context.cacheDir, "images")
+        cachePath.mkdirs()
+        val shareImageFile = File(cachePath, "image.jpg")
+
+        try {
+            val stream = FileOutputStream(shareImageFile)
+            imageBitmap.asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                shareImageFile
+            )
+
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/*"
+                putExtra(Intent.EXTRA_STREAM, uri)
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Share Image"))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+
+    LazyColumn {
+        items(items = uiState.data.filter {
             it.count > 0
         }.chunked(2)) { stats ->
             Row(
@@ -139,6 +190,11 @@ fun Stats(
                         modifier = Modifier
                             .padding(8.dp)
                             .aspectRatio(1f)
+                            .clickable {
+                                coroutineScope.launch {
+                                    shareImage(stat.toImageBitmap(context))
+                                }
+                            }
                             .weight(1f),
                         colors = CardDefaults.cardColors(
                             containerColor = stat.color.copy(alpha = 0.1f),
@@ -156,6 +212,11 @@ fun Stats(
                                 text = stringResource(id = stat.label),
                                 textAlign = TextAlign.Center,
                                 color = stat.color
+                            )
+                            Text(
+                                text = "(${stat.fromMillis.formatLight()})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.5f)
                             )
                             Text(
                                 text = stat.count.toString(),
@@ -329,8 +390,42 @@ fun Long.toDurationString(): String {
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
+fun Long.toDurationText(context: Context): String {
+    val hours = this / 3600
+    val minutes = (this % 3600) / 60
+    val seconds = this % 60
+    val hoursString = context.resources.getQuantityString(R.plurals.hours, hours.toInt(), hours)
+    val minutesString =
+        context.resources.getQuantityString(R.plurals.minutes, minutes.toInt(), minutes)
+    val secondsString =
+        context.resources.getQuantityString(R.plurals.seconds, seconds.toInt(), seconds)
+    // build the string and omit empty parts
+    return StringBuilder().apply {
+        if (hours > 0) {
+            append(hoursString)
+        }
+        if (minutes > 0) {
+            if (isNotEmpty()) {
+                append(" ")
+            }
+            append(minutesString)
+        }
+        if (seconds > 0) {
+            if (isNotEmpty()) {
+                append(" & ")
+            }
+            append(secondsString)
+        }
+    }.toString()
+}
+
 
 private fun Long.format(): String {
     val date = Date(this)
     return SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault()).format(date)
+}
+
+private fun Long.formatLight(): String {
+    val date = Date(this)
+    return SimpleDateFormat("MM/dd, HH:mm", Locale.getDefault()).format(date)
 }

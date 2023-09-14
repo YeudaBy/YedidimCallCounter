@@ -9,14 +9,14 @@
     <string name="this_week">שבוע זה</string>
     <string name="filters">מסננים</string>
     <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת</string>
-    <string name="permission_button">נו נו... בסדר</string>
+    <string name="permission_button">טוב נו... בסדר</string>
     <string name="call_types">סוגי שיחות:</string>
     <string name="incoming">נכנסות</string>
     <string name="outgoing">יוצאות</string>
     <string name="missed">לא נענו</string>
     <string name="duration">אורך:  %1$s</string>
     <string name="last_2_hours">בשעתיים האחרונות</string>
-    <string name="last_day">ביום האחרון</string>
+    <string name="last_day">ביממה האחרונה</string>
     <string name="last_2_days">ביומיים האחרונים</string>
     <string name="last_week">בשבוע האחרון</string>
     <string name="last_2_weeks">בשבועיים האחרונים</string>
@@ -28,4 +28,8 @@
     <string name="app_author_site">לחצו כאן למעבר לאתר שלי:</string>
     <string name="app_github">הקוד של האפליקציה מאוחסן בגיאהטב. לחצו כאן להצגה.</string>
     <string name="info">מידע</string>
+    <string name="start_of_hour">מתחילת השעה</string>
+    <string name="start_of_day">מתחילת היום</string>
+    <string name="start_of_week">מתחילת השבוע</string>
+    <string name="start_of_month">מתחילת החודש</string>
 </resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="seconds">
+        <item quantity="one">Second</item>
+        <item quantity="other">%d Seconds</item>
+    </plurals>
+</resources>
