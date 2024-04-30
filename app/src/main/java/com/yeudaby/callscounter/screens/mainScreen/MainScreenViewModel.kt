@@ -127,9 +127,9 @@ class MainScreenViewModel : ViewModel() {
         )
     }
 
-    private fun getStatistics(): Statistics {
+    private fun getStatistics(): Statistics? {
         val filteredCalls = _uiState.value.filteredCalls
-        val longestCall = filteredCalls.maxByOrNull { it.duration }!!
+        val longestCall = filteredCalls.maxByOrNull { it.duration } ?: return null
         val mostBusiestHour = filteredCalls.groupBy {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = it.date
