@@ -4,20 +4,22 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.yeudaby.callscounter.R
 
@@ -31,33 +33,30 @@ fun InfoScreen(back: () -> Boolean) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
-                .padding(16.dp)
+                .clip(MaterialTheme.shapes.extraLarge)
                 .border(
-                    0.dp,
+                    1.dp,
                     MaterialTheme.colorScheme.primary,
                     MaterialTheme.shapes.extraLarge
                 )
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f))
-                .padding(24.dp)
+                .padding(12.dp)
         ) {
 
             Text(
                 text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.displaySmall,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = stringResource(
-                    id = R.string.app_version,
-                    context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    letterSpacing = 2.5.sp
                 ),
-                style = MaterialTheme.typography.bodyMedium
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
             Text(
                 text = stringResource(id = R.string.app_description),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    textAlign = TextAlign.Justify
+                )
             )
 
             HorizontalDivider()
@@ -68,31 +67,42 @@ fun InfoScreen(back: () -> Boolean) {
             )
 
             Text(
-                text = stringResource(id = R.string.app_author_email),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.clickable {
-                    context.openEmail(resId = R.string.app_author_email_address)
-                },
-                textDecoration = TextDecoration.Underline
+                text = stringResource(
+                    id = R.string.app_version,
+                    context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                ),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             )
 
-            Text(
-                text = stringResource(id = R.string.app_author_site),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.clickable {
-                    context.openUrl(R.string.app_author_site_address)
-                },
-                textDecoration = TextDecoration.Underline
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                OutlinedButton(
+                    onClick = { context.openEmail(resId = R.string.app_author_email_address) }) {
+                    Text(
+                        text = stringResource(id = R.string.app_author_email),
+                        fontSize = 12.sp
+                    )
+                }
 
-            Text(
-                text = stringResource(id = R.string.app_github),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.clickable {
-                    context.openUrl(R.string.app_github_address)
-                },
-                textDecoration = TextDecoration.Underline
-            )
+                OutlinedButton(onClick = { context.openUrl(R.string.app_author_site_address) }) {
+                    Text(
+                        text = stringResource(id = R.string.app_author_site),
+                        fontSize = 12.sp
+                    )
+                }
+
+                OutlinedButton(onClick = { context.openUrl(R.string.app_github_address) }) {
+                    Text(
+                        text = stringResource(id = R.string.app_github),
+                        fontSize = 12.sp
+                    )
+                }
+            }
         }
     }
 }
