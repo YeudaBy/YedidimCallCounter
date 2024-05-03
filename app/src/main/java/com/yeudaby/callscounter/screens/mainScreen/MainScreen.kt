@@ -384,28 +384,25 @@ fun Calls(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Filters(
     viewModel: MainScreenViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Column {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                viewModel.onDurationCheckedChange(
-                    isChecked = !uiState.withDuration,
-                )
-            }
-            .padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = uiState.withDuration, onClick = {
-                viewModel.onDurationCheckedChange(
-                    isChecked = !uiState.withDuration,
-                )
-            })
-            Text(text = stringResource(R.string.only_from_15_seconds_duration))
-        }
+
+        OutlinedTextField(
+            value = if (uiState.fromDuration == 0) "" else uiState.fromDuration.toString(),
+            onValueChange = { viewModel.onDurationChange(it.toIntOrNull() ?: 0) },
+            label = { Text(text = stringResource(R.string.from_duration)) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Go
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
 
         Column(
             modifier = Modifier

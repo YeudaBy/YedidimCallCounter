@@ -6,8 +6,8 @@ import com.yeudaby.callscounter.data.model.CallType
 data class MainScreenUiState(
     val calls: List<CallLogEntry> = emptyList(),
     val filteredCalls: List<CallLogEntry> = emptyList(),
-    val withDuration: Boolean = false,
+    val fromDuration: Int = 0,
     val selectedCallTypes: List<CallType> = listOf(CallType.INCOMING),
-    val statistics: MainScreenViewModel.Statistics?,
+    val statistics: MainScreenViewModel.Statistics? = null,
     val data: List<MainScreenViewModel.DataItem> = emptyList()
 )

@@ -23,14 +23,7 @@ import java.util.Calendar
 
 class MainScreenViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MainScreenUiState(
-        filteredCalls = emptyList(),
-        withDuration = false,
-        selectedCallTypes = listOf(CallType.INCOMING),
-        calls = emptyList(),
-        data = emptyList(),
-        statistics = null
-    ))
+    private val _uiState = MutableStateFlow(MainScreenUiState())
     val uiState get() = _uiState
 
     fun init(context: Context) = viewModelScope.launch {
@@ -49,11 +42,11 @@ class MainScreenViewModel : ViewModel() {
         )
     }
 
-    fun onDurationCheckedChange(
-        isChecked: Boolean,
+    fun onDurationChange(
+        duration: Int
     ) {
         _uiState.value = _uiState.value.copy(
-            withDuration = isChecked,
+            fromDuration = duration,
         )
         filterCalls()
     }
@@ -243,10 +236,12 @@ class MainScreenViewModel : ViewModel() {
     private fun isValidCall(
         callLogEntry: CallLogEntry,
     ): Boolean {
-        val withDuration = _uiState.value.withDuration
+        val fromDuration = _uiState.value.fromDuration.takeIf { it > 0 }
         val selectedCallTypes = _uiState.value.selectedCallTypes
-        return selectedCallTypes.contains(callLogEntry.type) && if (withDuration) {
-            callLogEntry.duration >= 15
+        return selectedCallTypes
+            .contains(callLogEntry.type)
+                && if (fromDuration != null) {
+            callLogEntry.duration >= fromDuration
         } else {
             true
         } && callLogEntry.number in listOf("1230", "0533131310")
