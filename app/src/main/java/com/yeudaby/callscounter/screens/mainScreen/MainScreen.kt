@@ -354,9 +354,32 @@ fun Calls(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     LazyColumn {
-        items(items = uiState.filteredCalls) { callLogEntry ->
-            CallLogEntryItem(callLogEntry = callLogEntry)
-            HorizontalDivider()
+        uiState.filteredCalls.groupBy { it.date.getDay() }.forEach { (day, calls) ->
+            stickyHeader {
+                Text(
+                    text = day.getDayOfMonth(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xff000000),
+                                    Color(0x00000000),
+                                ),
+                                start = Offset.Infinite,
+                                end = Offset.Zero
+                            )
+                        )
+                        .padding(12.dp)
+                )
+            }
+            items(items = calls) { callLogEntry ->
+                CallLogEntryItem(callLogEntry = callLogEntry)
+                HorizontalDivider()
+            }
         }
     }
 }
