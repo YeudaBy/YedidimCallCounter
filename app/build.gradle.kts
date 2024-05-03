@@ -14,8 +14,8 @@ android {
         applicationId = "com.yeudaby.callscounter"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3
-        versionName = "1.3"
+        versionCode = 6
+        versionName = "1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -88,5 +88,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // vico
+    implementation(libs.vico.compose.m3)
 
 }
