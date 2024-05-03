@@ -7,6 +7,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Card
@@ -32,7 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -41,27 +43,50 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStartAxis
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineSpec
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.shader.color
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.common.shader.DynamicShader
 import com.yeudaby.callscounter.R
 import com.yeudaby.callscounter.data.model.CallLogEntry
 import com.yeudaby.callscounter.data.model.CallType
+import com.yeudaby.callscounter.screens.rememberMarker
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -176,6 +201,14 @@ fun Stats(
     val uiState by viewModel.uiState.collectAsState()
 
     LazyColumn {
+
+        item {
+            CallsPerDay(
+                data = uiState.filteredCalls,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+        }
+
         items(items = uiState.data.filter {
             it.count > 0
         }.chunked(2)) { stats ->
@@ -231,6 +264,90 @@ fun Stats(
 }
 
 
+@Composable
+fun CallsPerDay(
+    data: List<CallLogEntry>,
+    modifier: Modifier,
+) {
+    val modelProducer = remember { CartesianChartModelProducer.build() }
+    val marker = rememberMarker()
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.Default) {
+            modelProducer.tryRunTransaction {
+                val days = data.map { it.date.getDay() }.distinct()
+                lineSeries {
+                    series(
+                        days,
+                        days.map { day ->
+                            data.filter { it.date.getDay() == day }.size
+                        }
+                    )
+
+                }
+            }
+        }
+    }
+
+    Column {
+        CartesianChartHost(
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(
+                    listOf(
+                        rememberLineSpec(
+                            DynamicShader.color(
+                                Color(
+                                    0xffa485e0
+                                )
+                            )
+                        )
+                    )
+                ),
+                startAxis = rememberStartAxis(),
+                bottomAxis = rememberBottomAxis(
+                    guideline = null,
+                    valueFormatter = { value, chartValues, verticalAxisPosition ->
+                        value.toInt().getDayOfMonth()
+                    },
+                    labelRotationDegrees = 12f,
+                    label = rememberTextComponent(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textSize = 12.sp,
+                    ),
+                ),
+            ),
+            modelProducer = modelProducer,
+            modifier = modifier,
+            marker = marker,
+            zoomState = rememberVicoZoomState(zoomEnabled = false),
+            placeholder = {
+                Text(
+                    text = "No data",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.Center)
+                )
+            },
+        )
+    }
+}
+
+private fun Long.getDay(): Int {
+    // return the day part of the date
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+    return calendar.get(Calendar.DAY_OF_YEAR)
+}
+
+private fun Int.getDayOfMonth(): String {
+    // return the day part of the date
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_YEAR, this)
+    return SimpleDateFormat("dd/MM", Locale.getDefault()).format(calendar.time)
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Calls(
     viewModel: MainScreenViewModel

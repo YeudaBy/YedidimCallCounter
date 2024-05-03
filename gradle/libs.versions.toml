@@ -14,6 +14,7 @@ lifecycle-viewmodel-compose = "_"
 navigation-compose = "_"
 timber = "_"
 material = "1.9.0"
+vico = "2.0.0-alpha.19"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
@@ -36,6 +37,7 @@ ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.require = "1.2.0-alpha07" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
