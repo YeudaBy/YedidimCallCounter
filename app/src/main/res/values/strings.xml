@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calls Counter</string>
+    <string name="app_name">Call Counter</string>
     <string name="calls">Calls</string>
     <string name="only_from_15_seconds_duration">Only from 15 seconds duration</string>
     <string name="stats">Statistics</string>
@@ -21,20 +21,19 @@
     <string name="last_2_weeks">Last two weeks</string>
     <string name="last_month">Last month</string>
     <string name="app_version">App version: %1$s</string>
-    <string name="app_description">This app will count your calls to/from Yedidim call center. You can filter by call type, display your statics and more. the numbers that counts are: 1230 and 0533131310.</string>
-    <string name="app_author">Created by Yeuda A. Borodyanski - Jerusalem :)</string>
-    <string name="app_author_email">Click here to send me an email:</string>
+    <string name="app_description">This app will count your calls to or from \'Yedidim\' call center. \nYou can filter by call type, display your statics and more.</string>
+    <string name="app_author">Created by Yeuda Arie - 1883</string>
+    <string name="app_author_email">My Email</string>
     <string name="app_author_email_address" translatable="false">YeudaBorodyanski@gmail.com</string>
-    <string name="app_author_site">Click here to open my website:</string>
+    <string name="app_author_site">My Website</string>
     <string name="app_author_site_address" translatable="false">https://yeudaby.com</string>
     <string name="app_github_address" translatable="false">https://github.com/YeudaBy/YedidimCallCounter</string>
-    <string name="app_github">The app source code hosted here on GitHub.</string>
+    <string name="app_github">App code in GitHub</string>
     <string name="info">Info</string>
     <string name="start_of_hour">Start of the hour</string>
     <string name="start_of_day">Start of the day</string>
     <string name="start_of_week">Start of the week</string>
     <string name="start_of_month">Start of the month</string>
-    <string name="longest_call">Longest call</string>
-    <string name="total_duration_day">Total duration from the start of the day:</string>
-    <string name="total_duration_week">Total duration from start of the week:</string>
+    <string name="calls_per_day">Calls per day</string>
+    <string name="from_duration">Calls from X seconds</string>
 </resources>

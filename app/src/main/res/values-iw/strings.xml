@@ -22,14 +22,16 @@
     <string name="last_2_weeks">בשבועיים האחרונים</string>
     <string name="last_month">בחודש האחרון</string>
     <string name="app_version">גרסת האפליקציה: %1$s</string>
-    <string name="app_description">האפליקציה הזו תספור את השיחות שלכם מ/אל מוקד ידידים. תוכלו לסנן את השיחות לפי סוגים, להציג את הנתונים לפי זמנים ועוד. המספרים הנספרים הם: 1230 ו 0533131310</string>
-    <string name="app_author">נוצר על ידי יהודה א. בורודיאנסקי ממוקד ירושלים :)</string>
-    <string name="app_author_email">לחצו כאן על מנת לשלוח לי מייל:</string>
-    <string name="app_author_site">לחצו כאן למעבר לאתר שלי:</string>
-    <string name="app_github">הקוד של האפליקציה מאוחסן בגיאהטב. לחצו כאן להצגה.</string>
+    <string name="app_description">אפליקציה הזו תספור את השיחות שלכם מ ו/או אל מוקד ידידים. \nתוכלו לסנן את השיחות לפי סוגים, להציג את הנתונים לפי זמנים ועוד. \nשימו לב, המידע מתבסס על יומן השיחות במכשיר, ויכולות להיווצר תקלות בסנכרון בינו לבין מערכת המוקד. כמו״כ - בטאב המסננים תוכלו להגדיר את מינימום הזמן בשניות של השיחות שברצונכם לספור. \nבלחיצה על כרטיס מידע בטאב הנתונים, תוכלו לשתף את הכרטיס מחוץ לאפליקציה, מחכים לכם בפורומים!</string>
+    <string name="app_author">נוצר על ידי יהודה אריה - 1883</string>
+    <string name="app_author_email">המייל שלי</string>
+    <string name="app_author_site">האתר שלי</string>
+    <string name="app_github">קוד האפליקציה בגיטאהב</string>
     <string name="info">מידע</string>
     <string name="start_of_hour">מתחילת השעה</string>
     <string name="start_of_day">מתחילת היום</string>
     <string name="start_of_week">מתחילת השבוע</string>
     <string name="start_of_month">מתחילת החודש</string>
+    <string name="from_duration">שיחות החל מ- שניות</string>
+    <string name="calls_per_day">שיחות לפי ימים</string>
 </resources>
