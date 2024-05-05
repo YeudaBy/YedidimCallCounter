@@ -1,6 +1,6 @@
 # Yedidim Call Counter
-![GitHub Tag](https://img.shields.io/github/v/tag/yeudaby/YedidimCallCounter?style=plastic&label=version)
-![Static Badge](https://img.shields.io/badge/download-in?logo=googleplay&label=google%20play)
+[![GitHub Tag](https://img.shields.io/github/v/tag/yeudaby/YedidimCallCounter?style=plastic&label=version)](https://github.com/YeudaBy/YedidimCallCounter/releases)
+[![Static Badge](https://img.shields.io/badge/download-in?logo=googleplay&label=google%20play)](https://play.google.com/store/apps/details?id=com.yeudaby.callscounter)
 
 
 <img width="512" alt="Screenshot 2024-04-30 at 12 30 28 (1)" src="https://github.com/YeudaBy/YedidimCallCounter/assets/68661509/7367ed03-65d1-44bb-9af2-aa128ee84db8">
