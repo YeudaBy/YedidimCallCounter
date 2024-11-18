@@ -2,53 +2,80 @@ package com.yeudaby.callscounter.screens.mainScreen
 
 import android.content.ContentResolver
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.provider.CallLog
-import androidx.annotation.StringRes
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.toArgb
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yeudaby.callscounter.R
 import com.yeudaby.callscounter.data.model.CallLogEntry
 import com.yeudaby.callscounter.data.model.CallType
+import com.yeudaby.callscounter.data.model.DataItem
+import com.yeudaby.callscounter.data.model.Statistics
+import com.yeudaby.callscounter.data.model.Statistics.Companion.statsColors
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import timber.log.Timber.Forest.i
 import java.util.Calendar
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 class MainScreenViewModel : ViewModel() {
+
+    private val SECONDS_KEY = intPreferencesKey("seconds")
 
     private val _uiState = MutableStateFlow(MainScreenUiState())
     val uiState get() = _uiState
 
-    fun init(context: Context) = viewModelScope.launch {
-        _uiState.value = _uiState.value.copy(
-            calls = emptyList(),
-            filteredCalls = emptyList(),
-        )
-        getCallsLog(
-            fromDateMillis = getMonthsAgo(1),
-            toDateMillis = System.currentTimeMillis(),
-            context = context,
-        )
-        _uiState.value = _uiState.value.copy(
-            statistics = getStatistics(),
-            data = getData(),
-        )
+    fun init(context: Context) {
+        val secondsFlow: Flow<Int> = context.dataStore.data.map { preferences ->
+            preferences[SECONDS_KEY] ?: 0
+        }
+
+        viewModelScope.launch {
+            secondsFlow.collect {
+                Timber.w("seconds: $it")
+                _uiState.value = _uiState.value.copy(
+                    fromDuration = it
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                calls = emptyList(),
+                filteredCalls = emptyList(),
+            )
+            getCallsLog(
+                fromDateMillis = getMonthsAgo(1),
+                toDateMillis = System.currentTimeMillis(),
+                context = context,
+            )
+            _uiState.value = _uiState.value.copy(
+                statistics = getStatistics(),
+                data = getData(),
+            )
+        }
     }
 
     fun onDurationChange(
-        duration: Int
+        duration: Int, context: Context
     ) {
         _uiState.value = _uiState.value.copy(
             fromDuration = duration,
         )
         filterCalls()
+        viewModelScope.launch {
+            context.dataStore.edit { settings ->
+                settings[SECONDS_KEY] = duration
+            }
+        }
     }
 
     fun onCallTypeCheckedChange(
@@ -74,44 +101,37 @@ class MainScreenViewModel : ViewModel() {
                 count = filterByDate(getFromStartOfTheHour()).size,
                 color = statsColors["hour"]!!,
                 fromMillis = getFromStartOfTheHour(),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.last_hour,
                 count = filterByDate(getHoursAgo(1)).size,
                 color = statsColors["hour"]!!,
                 fromMillis = getHoursAgo(1),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.start_of_day,
                 count = filterByDate(getFromStartOfTheDay()).size,
                 color = statsColors["day"]!!,
                 fromMillis = getFromStartOfTheDay(),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.last_day,
                 count = filterByDate(getDaysAgo(1)).size,
                 color = statsColors["day"]!!,
                 fromMillis = getDaysAgo(1),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.start_of_week,
                 count = filterByDate(getFromStartOfTheWeek()).size,
                 color = statsColors["week"]!!,
                 fromMillis = getFromStartOfTheWeek(),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.last_week,
                 count = filterByDate(getWeeksAgo(1)).size,
                 color = statsColors["week"]!!,
                 fromMillis = getWeeksAgo(1),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.start_of_month,
                 count = filterByDate(getFromStartOfTheMonth()).size,
                 color = statsColors["month"]!!,
                 fromMillis = getFromStartOfTheMonth(),
-            ),
-            DataItem(
+            ), DataItem(
                 label = R.string.last_month,
                 count = filterByDate(getMonthsAgo(1)).size,
                 color = statsColors["month"]!!,
@@ -153,21 +173,6 @@ class MainScreenViewModel : ViewModel() {
         )
     }
 
-    data class Statistics(
-        val longestCall: CallLogEntry,
-        val mostBusiestHour: Long,
-        val totalDurationStartOfHour: Int,
-        val totalDurationStartOfDay: Int,
-        val totalDurationStartOfWeek: Int,
-        val totalDurationStartOfMonth: Int,
-    )
-
-    private val statsColors = mapOf<String, Color>(
-        "hour" to Color(0xFF9C27B0),
-        "day" to Color(0xFFFF5722),
-        "week" to Color(0xFF4CAF50),
-        "month" to Color(0xFFFFEB3B),
-    )
 
     private fun filterCalls() {
         val filteredCalls = _uiState.value.calls.filter { isValidCall(it) }
@@ -223,7 +228,7 @@ class MainScreenViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(
                     calls = _uiState.value.calls.plus(
                         newCallLog.also {
-//                            i("CallLogEntry: $it")
+                            i("CallLogEntry: $it")
                         }
                     )
                 )
@@ -317,69 +322,4 @@ class MainScreenViewModel : ViewModel() {
             it.date >= date
         }
     }
-
-    data class DataItem(
-        val count: Int,
-        @StringRes val label: Int,
-        val color: Color,
-        val fromMillis: Long,
-    ) {
-        fun toImageBitmap(context: Context): ImageBitmap {
-            val bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            val paint = Paint()
-
-            paint.isFilterBitmap = false
-            paint.isDither = true
-
-            paint.color = color.copy(alpha = 0.2f).toArgb()
-            canvas.drawRect(0f, 0f, 1800f, 1800f, paint)
-
-            paint.textAlign = Paint.Align.CENTER
-            paint.style = Paint.Style.FILL
-            paint.isAntiAlias = true
-
-            paint.color = Color.White.toArgb()
-            paint.textSize = 80f
-            paint.isFakeBoldText = true
-
-            canvas.drawText(
-                count.toString(),
-                150f,
-                150f,
-                paint
-            )
-
-            paint.textSize = 25f
-            paint.isFakeBoldText = false
-            paint.letterSpacing = 0.1f
-
-            canvas.drawText(
-                context.getString(R.string.calls),
-                150f,
-                200f,
-                paint
-            )
-
-            paint.isFakeBoldText = true
-            paint.textSize = 20f
-            paint.color = color.toArgb()
-
-            canvas.drawText(
-                context.getString(label),
-                150f,
-                225f,
-                paint
-            )
-
-            paint.isAntiAlias = true
-
-            val icon = AppCompatResources.getDrawable(context, R.drawable.horizontal_logo)
-            icon?.setBounds(10, 10, 150, 65)
-            icon?.draw(canvas)
-
-            return bitmap.asImageBitmap()
-        }
-    }
-
 }

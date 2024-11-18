@@ -81,10 +81,9 @@ fun InfoScreen(back: () -> Boolean) {
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier.align(Alignment.End),
             ) {
-                OutlinedButton(
-                    onClick = { context.openEmail(resId = R.string.app_author_email_address) }) {
+                OutlinedButton(onClick = { context.openUrl(R.string.latest_releases_url) }) {
                     Text(
-                        text = stringResource(id = R.string.app_author_email),
+                        text = stringResource(id = R.string.latest_releases),
                         fontSize = 12.sp
                     )
                 }
@@ -99,6 +98,13 @@ fun InfoScreen(back: () -> Boolean) {
                 OutlinedButton(onClick = { context.openUrl(R.string.app_github_address) }) {
                     Text(
                         text = stringResource(id = R.string.app_github),
+                        fontSize = 12.sp
+                    )
+                }
+
+                OutlinedButton(onClick = { context.openUrl(R.string.privacy_policy_url) }) {
+                    Text(
+                        text = stringResource(id = R.string.privacy_policy),
                         fontSize = 12.sp
                     )
                 }

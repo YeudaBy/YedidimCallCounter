@@ -8,7 +8,7 @@
     <string name="today">יום זה</string>
     <string name="this_week">שבוע זה</string>
     <string name="filters">מסננים</string>
-    <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת</string>
+    <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת:</string>
     <string name="permission_button">טוב נו... בסדר</string>
     <string name="call_types">סוגי שיחות:</string>
     <string name="incoming">נכנסות</string>
@@ -34,4 +34,9 @@
     <string name="start_of_month">מתחילת החודש</string>
     <string name="from_duration">שיחות החל מ- שניות</string>
     <string name="calls_per_day">שיחות לפי ימים</string>
+    <string name="privacy_policy">מדיניות פרטיות</string>
+    <string name="notification_permission_request">על מנת שאוכל לעדכן אותך בהמשך על עדכונים נוספים, נא לאפשר קבלת התראות:</string>
+    <string name="notification_permission_button">יס!</string>
+    <string name="latest_releases">בדוק עדכונים</string>
+    <string name="seconds_helper_text">יתכן ויקח מספר שניות עד שהמידע יטען…</string>
 </resources>

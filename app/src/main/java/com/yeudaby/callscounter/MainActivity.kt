@@ -21,7 +21,7 @@ import com.google.firebase.FirebaseApp
 import com.yeudaby.callscounter.screens.InfoScreen
 import com.yeudaby.callscounter.screens.counterScreen.CounterScreen
 import com.yeudaby.callscounter.screens.mainScreen.MainScreen
-import com.yeudaby.callscounter.screens.permissionScreen.PermissionScreen
+import com.yeudaby.callscounter.screens.PermissionScreen
 import com.yeudaby.callscounter.ui.theme.CallsCounterTheme
 import timber.log.Timber
 

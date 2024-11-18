@@ -14,8 +14,8 @@ android {
         applicationId = "com.yeudaby.callscounter"
         minSdk = 24
         targetSdk = 33
-        versionCode = 6
-        versionName = "1.6"
+        versionCode = 7
+        versionName = "1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -84,12 +84,15 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.firebase.messaging.ktx)
 
     // vico
     implementation(libs.vico.compose.m3)
+
+    // data-store
+    implementation(libs.androidx.datastore.preferences)
 
 }

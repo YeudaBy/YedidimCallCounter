@@ -389,16 +389,21 @@ fun Filters(
     viewModel: MainScreenViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    Column {
+    val context = LocalContext.current
+
+    Column(modifier = Modifier.fillMaxSize()) {
 
         OutlinedTextField(
             value = if (uiState.fromDuration == 0) "" else uiState.fromDuration.toString(),
-            onValueChange = { viewModel.onDurationChange(it.toIntOrNull() ?: 0) },
+            onValueChange = { viewModel.onDurationChange(it.toIntOrNull() ?: 0, context) },
             label = { Text(text = stringResource(R.string.from_duration)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Go
             ),
+            supportingText = {
+                Text(text = stringResource(R.string.seconds_helper_text))
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)

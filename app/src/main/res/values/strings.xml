@@ -7,7 +7,7 @@
     <string name="today">Today</string>
     <string name="this_week">This week</string>
     <string name="filters">Filters</string>
-    <string name="permission_request">We need to read your calls log to count your calls</string>
+    <string name="permission_request">We need to read your calls log to count your calls:</string>
     <string name="permission_button">Well... ok</string>
     <string name="call_types">"Call Types: "</string>
     <string name="incoming">Incoming</string>
@@ -36,4 +36,11 @@
     <string name="start_of_month">Start of the month</string>
     <string name="calls_per_day">Calls per day</string>
     <string name="from_duration">Calls from X seconds</string>
+    <string name="privacy_policy_url" translatable="false">https://github.com/YeudaBy/YedidimCallCounter/blob/main/PRIVACY.md</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="notification_permission_request">In order to update you about the upcoming updates, please allow me to send you notifications:</string>
+    <string name="notification_permission_button">Yes!</string>
+    <string name="latest_releases_url" translatable="false">https://github.com/YeudaBy/YedidimCallCounter/releases/latest</string>
+    <string name="latest_releases">Check for updates</string>
+    <string name="seconds_helper_text">This may take a few seconds to load…</string>
 </resources>
