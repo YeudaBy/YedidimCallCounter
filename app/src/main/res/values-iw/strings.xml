@@ -35,10 +35,25 @@
     <string name="from_duration">שיחות החל מ- שניות</string>
     <string name="calls_per_day">שיחות לפי ימים</string>
     <string name="privacy_policy">מדיניות פרטיות</string>
-    <string name="notification_permission_request">על מנת שאוכל לעדכן אותך בהמשך על עדכונים נוספים, נא לאפשר קבלת התראות:</string>
-    <string name="notification_permission_button">יס!</string>
     <string name="latest_releases">בדוק עדכונים</string>
     <string name="seconds_helper_text">יתכן ויקח מספר שניות עד שהמידע יטען…</string>
     <string name="share">שתף</string>
     <string name="share_text">היי!  רק רציתי לשתף איתך אפליקציה למוקדני ידידים שיכולה לעזור לך לעקוב אחרי כמות השיחות שלך במהלך ההתנדבות.  תנסה עכשיו!</string>
+
+    <!-- יומן שיחות -->
+    <string name="call_log_permission_request">אנחנו זקוקים להרשאת גישה ליומן השיחות כדי לעקוב אחר קריאות השירות שלך בצורה מיטבית.</string>
+    <string name="call_log_permission_button">אפשר גישה ליומן שיחות</string>
+    <string name="open_settings_button">פתח הגדרות</string>
+
+    <!-- התראות -->
+    <string name="notification_permission_request">אנחנו ממליצים לאפשר התראות כדי לקבל עדכונים שוטפים על קריאות השירות שלך.</string>
+    <string name="notification_permission_button">אפשר התראות</string>
+
+    <!-- כפתור דילוג -->
+    <string name="skip_text">דלג</string>
+
+    <string name="call_log_permission_request_settings">
+    גישה ליומן השיחות נדרשת עבור הפונקציות הנדרשות של האפליקציה. אנא אפשר את הגישה בהגדרות האפליקציה.
+</string>
+
 </resources>

@@ -21,7 +21,8 @@ import com.google.firebase.FirebaseApp
 import com.yeudaby.callscounter.screens.InfoScreen
 import com.yeudaby.callscounter.screens.counterScreen.CounterScreen
 import com.yeudaby.callscounter.screens.mainScreen.MainScreen
-import com.yeudaby.callscounter.screens.PermissionScreen
+import com.yeudaby.callscounter.screens.permission.PermissionScreen
+import com.yeudaby.callscounter.screens.permission.PermissionViewModel
 import com.yeudaby.callscounter.ui.theme.CallsCounterTheme
 import timber.log.Timber
 
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     visible = true,
                     exit = fadeOut() + shrinkOut()
                 ) {
-                    PermissionScreen {
+                    PermissionScreen(PermissionViewModel()) {
                         navController.navigate("home") {
                             popUpTo("permissionScreen") { inclusive = true }
                         }
