@@ -2,6 +2,7 @@ package com.yeudaby.callscounter.screens.mainScreen
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.provider.CallLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -63,6 +64,23 @@ class MainScreenViewModel : ViewModel() {
             )
         }
     }
+
+    fun shareApp(context: Context) {
+        val text = buildString {
+            append(context.getString(R.string.share_text))
+            append("\n\n")
+            append(context.getString(R.string.latest_releases_url))
+        }
+
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        context.startActivity(shareIntent)
+    }
+
 
     fun onDurationChange(
         duration: Int, context: Context

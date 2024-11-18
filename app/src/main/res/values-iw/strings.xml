@@ -39,4 +39,6 @@
     <string name="notification_permission_button">יס!</string>
     <string name="latest_releases">בדוק עדכונים</string>
     <string name="seconds_helper_text">יתכן ויקח מספר שניות עד שהמידע יטען…</string>
+    <string name="share">שתף</string>
+    <string name="share_text">היי!  רק רציתי לשתף איתך אפליקציה למוקדני ידידים שיכולה לעזור לך לעקוב אחרי כמות השיחות שלך במהלך ההתנדבות.  תנסה עכשיו!</string>
 </resources>
