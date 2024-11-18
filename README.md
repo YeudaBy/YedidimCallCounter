@@ -23,7 +23,7 @@ In this app you can see:
 
 So, please enjoy!
 
-And... "get out, do some Chasadim!" (~ Lazy Shtern)
+And... "get out, do some Chasadim!" (~ Leizi Shtern)
 
 
 
