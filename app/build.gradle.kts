@@ -2,17 +2,19 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.kotlinKapt)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.yeudaby.callscounter"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.yeudaby.callscounter"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 33
         versionCode = 8
         versionName = "1.7.1"
@@ -43,7 +45,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
@@ -72,6 +74,7 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.ui.text.google.fonts)
 
 
     // Timber
@@ -92,7 +95,15 @@ dependencies {
     // vico
     implementation(libs.vico.compose.m3)
 
+    // material icons
+    implementation(libs.material.icons.core)
+
     // data-store
     implementation(libs.androidx.datastore.preferences)
+
+    // room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
 }
