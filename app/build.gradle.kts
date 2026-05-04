@@ -16,8 +16,8 @@ android {
         applicationId = "com.yeudaby.callscounter"
         minSdk = 29
         targetSdk = 33
-        versionCode = 8
-        versionName = "1.7.1"
+        versionCode = 9
+        versionName = "2.0.1-4.5.26"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
