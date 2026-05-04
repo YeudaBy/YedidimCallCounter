@@ -69,7 +69,7 @@ fun InfoScreen(back: () -> Boolean) {
             Text(
                 text = stringResource(
                     id = R.string.app_version,
-                    context.packageManager.getPackageInfo(context.packageName, 0).versionName
+                    context.packageManager.getPackageInfo(context.packageName, 0).versionName.toString()
                 ),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)

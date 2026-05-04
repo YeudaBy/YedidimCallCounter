@@ -5,11 +5,12 @@
     <string name="only_from_15_seconds_duration">החל מ15 שניות בלבד</string>
     <string name="stats">נתונים</string>
     <string name="last_hour">בשעה האחרונה</string>
-    <string name="today">יום זה</string>
-    <string name="this_week">שבוע זה</string>
+    <string name="today">היום</string>
+    <string name="this_week">השבוע</string>
     <string name="filters">מסננים</string>
+    <string name="filters_description">באמצעות שינוי הגדרות אלו תוכלו להגדיר מה ייספר לכם באפליקציה כשיחות.</string>
     <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת:</string>
-    <string name="permission_button">טוב נו... בסדר</string>
+    <string name="permission_button">סבבה, לך על זה</string>
     <string name="call_types">סוגי שיחות:</string>
     <string name="incoming">נכנסות</string>
     <string name="outgoing">יוצאות</string>
@@ -46,7 +47,7 @@
     <string name="open_settings_button">פתח הגדרות</string>
 
     <!-- התראות -->
-    <string name="notification_permission_request">אנחנו ממליצים לאפשר התראות כדי לקבל עדכונים שוטפים על קריאות השירות שלך.</string>
+    <string name="notification_permission_request">אנחנו ממליצים לאפשר התראות כדי לקבל עדכונים שוטפים.</string>
     <string name="notification_permission_button">אפשר התראות</string>
 
     <!-- כפתור דילוג -->
@@ -55,5 +56,29 @@
     <string name="call_log_permission_request_settings">
     גישה ליומן השיחות נדרשת עבור הפונקציות הנדרשות של האפליקציה. אנא אפשר את הגישה בהגדרות האפליקציה.
 </string>
+    <string name="settings">הגדרות</string>
+    <string name="weekly_goal_progress">התקדמות היעד השבועי</string>
+    <string name="goal_reached">היעד הושג!</string>
+    <string name="share_week_progress">שתף התקדמות שבועית</string>
+    <string name="week_goal_title">יעד שבועי</string>
+    <string name="week_goal_description">הגדר את מספר השיחות שברצונך להגיע אליו בכל שבוע. פס ההתקדמות יתעדכן אוטומטית לפי היעד השמור.</string>
+    <string name="week_goal_current">היעד הנוכחי: %1$d שיחות</string>
+    <string name="week_goal_input_label">יעד שבועי</string>
+    <string name="week_goal_input_hint">הזן מספר חיובי של שיחות.</string>
+    <string name="week_goal_invalid">אנא הזן יעד תקין.</string>
+    <string name="save_week_goal">שמור יעד שבועי</string>
+    <string name="week_goal_preset">הגדר יעד של %1$d שיחות</string>
+    <string name="week_goal_share_text">השבוע אני על %1$d מתוך %2$d שיחות ביעד שלי (%3$d%%).</string>
+    <string name="week_goal_share_reached_text">השגתי את היעד השבועי שלי עם %1$d מתוך %2$d שיחות השבוע (%3$d%%)!</string>
+    <string name="minimum_duration_seconds">משך מינימלי (שניות)</string>
+    <string name="monitored_hotline">מספרים שנמדדים</string>
+    <string name="yedidim_hotline">המוקד הארצי של ידידים</string>
+    <string name="total_calls_last_30_days">סך השיחות ב-30 הימים האחרונים</string>
+    <string name="no_calls_match_filters">אין שיחות שתואמות למסננים הנוכחיים.</string>
+    <string name="no_statistics_available">אין נתונים זמינים.</string>
+    <string name="total_matching_calls">סך כל השיחות התואמות</string>
+    <string name="call_log_no_matching_calls">לא נמצאו שיחות תואמות בחלון ההיסטוריה שנבחר.</string>
+    <string name="call_log_xiaomi_hint">לא נמצאו שיחות תואמות. במכשירי Xiaomi יש לאפשר גם גישה ליומן השיחות דרך הגדרות האבטחה או ההרשאות של הטלפון.</string>
+    <string name="this_month">החודש</string>
 
 </resources>

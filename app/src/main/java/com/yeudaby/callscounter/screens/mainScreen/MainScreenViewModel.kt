@@ -1,8 +1,8 @@
 package com.yeudaby.callscounter.screens.mainScreen
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.provider.CallLog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,18 +12,25 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yeudaby.callscounter.R
+import com.yeudaby.callscounter.data.calls.TrackedCallMatcher
 import com.yeudaby.callscounter.data.model.CallLogEntry
 import com.yeudaby.callscounter.data.model.CallType
 import com.yeudaby.callscounter.data.model.DataItem
 import com.yeudaby.callscounter.data.model.Statistics
 import com.yeudaby.callscounter.data.model.Statistics.Companion.statsColors
-import kotlinx.coroutines.flow.Flow
+import com.yeudaby.callscounter.data.repository.AppSettingsRepository
+import com.yeudaby.callscounter.getIntOrDefault
+import com.yeudaby.callscounter.getLongOrDefault
+import com.yeudaby.callscounter.getStringOrEmpty
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
-import timber.log.Timber.Forest.i
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -34,34 +41,38 @@ class MainScreenViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MainScreenUiState())
     val uiState get() = _uiState
 
+    private var initialized = false
+
     fun init(context: Context) {
-        val secondsFlow: Flow<Int> = context.dataStore.data.map { preferences ->
-            preferences[SECONDS_KEY] ?: 0
-        }
+        if (initialized) return
+        initialized = true
+        val appContext = context.applicationContext
+        val repository = AppSettingsRepository.getInstance(appContext)
 
         viewModelScope.launch {
-            secondsFlow.collect {
-                Timber.w("seconds: $it")
-                _uiState.value = _uiState.value.copy(
-                    fromDuration = it
-                )
+            repository.observeWeekGoal().collect { goal ->
+                _uiState.update { it.copy(weekGoal = goal) }
+            }
+        }
+
+        // Observe DataStore for duration preference changes
+        viewModelScope.launch {
+            context.dataStore.data.map { it[SECONDS_KEY] ?: 0 }.collect { seconds ->
+                _uiState.update { it.copy(fromDuration = seconds) }
+                if (_uiState.value.calls.isNotEmpty()) filterAndUpdate()
             }
         }
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                calls = emptyList(),
-                filteredCalls = emptyList(),
-            )
-            getCallsLog(
-                fromDateMillis = getMonthsAgo(1),
+            _uiState.update { it.copy(isLoading = true) }
+            val result = loadCalls(
+                fromDateMillis = getMonthsAgo(CALL_HISTORY_MONTHS),
                 toDateMillis = System.currentTimeMillis(),
                 context = context,
             )
-            _uiState.value = _uiState.value.copy(
-                statistics = getStatistics(),
-                data = getData(),
-            )
+            _uiState.update { it.copy(calls = result.calls, callLogHint = result.hintLabel) }
+            filterAndUpdate()
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -71,273 +82,276 @@ class MainScreenViewModel : ViewModel() {
             append("\n\n")
             append(context.getString(R.string.latest_releases_url))
         }
-
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, text)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        context.startActivity(shareIntent)
+        context.startActivity(
+            Intent.createChooser(
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, text)
+                    type = "text/plain"
+                },
+                null
+            )
+        )
     }
 
-
-    fun onDurationChange(
-        duration: Int, context: Context
-    ) {
-        _uiState.value = _uiState.value.copy(
-            fromDuration = duration,
+    fun shareWeekProgress(context: Context) {
+        val state = _uiState.value
+        val safeWeekGoal = state.weekGoal.coerceAtLeast(1)
+        val progressPercent = ((state.weekCount.toFloat() / safeWeekGoal.toFloat()) * 100)
+            .roundToInt()
+            .coerceAtMost(100)
+        val shareText = context.getString(
+            if (state.weekCount >= safeWeekGoal) {
+                R.string.week_goal_share_reached_text
+            } else {
+                R.string.week_goal_share_text
+            },
+            state.weekCount,
+            safeWeekGoal,
+            progressPercent,
         )
-        filterCalls()
+
+        context.startActivity(
+            Intent.createChooser(
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, shareText)
+                    type = "text/plain"
+                },
+                null,
+            )
+        )
+    }
+
+    fun onDurationChange(duration: Int, context: Context) {
+        _uiState.update { it.copy(fromDuration = duration) }
+        filterAndUpdate()
         viewModelScope.launch {
-            context.dataStore.edit { settings ->
-                settings[SECONDS_KEY] = duration
-            }
+            context.dataStore.edit { it[SECONDS_KEY] = duration }
         }
     }
 
-    fun onCallTypeCheckedChange(
-        callType: CallType
-    ) {
-        val currentSelectedCallTypes = _uiState.value.selectedCallTypes
-        if (!currentSelectedCallTypes.contains(callType)) {
-            _uiState.value = _uiState.value.copy(
-                selectedCallTypes = currentSelectedCallTypes.plus(callType),
-            )
-        } else {
-            _uiState.value = _uiState.value.copy(
-                selectedCallTypes = currentSelectedCallTypes.minus(callType),
+    fun onCallTypeCheckedChange(callType: CallType) {
+        val current = _uiState.value.selectedCallTypes
+        _uiState.update {
+            it.copy(
+                selectedCallTypes = if (callType in current) current - callType else current + callType
             )
         }
-        filterCalls()
+        filterAndUpdate()
     }
 
-    private fun getData(): List<DataItem> {
+    private fun filterAndUpdate() {
+        val filteredCalls = _uiState.value.calls.filter { isValidCall(it) }
+        val data = computeData(filteredCalls)
+        _uiState.update {
+            it.copy(
+                filteredCalls = filteredCalls,
+                statistics = computeStatistics(filteredCalls),
+                data = data,
+                todayCount = data.firstOrNull { item -> item.label == R.string.start_of_day }?.count ?: 0,
+                weekCount  = data.firstOrNull { item -> item.label == R.string.start_of_week }?.count ?: 0,
+            )
+        }
+    }
+
+    private fun computeData(filteredCalls: List<CallLogEntry>): List<DataItem> {
+        val startOfHour = getFromStartOfTheHour()
+        val oneHourAgo = getHoursAgo(1)
+        val startOfDay = getFromStartOfTheDay()
+        val oneDayAgo = getDaysAgo(1)
+        val startOfWeek = getFromStartOfTheWeek()
+        val oneWeekAgo = getWeeksAgo(1)
+        val startOfMonth = getFromStartOfTheMonth()
+        val oneMonthAgo = getMonthsAgo(1)
+
+        fun countFrom(from: Long) = filteredCalls.count { it.date >= from }
+
         return listOf(
-            DataItem(
-                label = R.string.start_of_hour,
-                count = filterByDate(getFromStartOfTheHour()).size,
-                color = statsColors["hour"]!!,
-                fromMillis = getFromStartOfTheHour(),
-            ), DataItem(
-                label = R.string.last_hour,
-                count = filterByDate(getHoursAgo(1)).size,
-                color = statsColors["hour"]!!,
-                fromMillis = getHoursAgo(1),
-            ), DataItem(
-                label = R.string.start_of_day,
-                count = filterByDate(getFromStartOfTheDay()).size,
-                color = statsColors["day"]!!,
-                fromMillis = getFromStartOfTheDay(),
-            ), DataItem(
-                label = R.string.last_day,
-                count = filterByDate(getDaysAgo(1)).size,
-                color = statsColors["day"]!!,
-                fromMillis = getDaysAgo(1),
-            ), DataItem(
-                label = R.string.start_of_week,
-                count = filterByDate(getFromStartOfTheWeek()).size,
-                color = statsColors["week"]!!,
-                fromMillis = getFromStartOfTheWeek(),
-            ), DataItem(
-                label = R.string.last_week,
-                count = filterByDate(getWeeksAgo(1)).size,
-                color = statsColors["week"]!!,
-                fromMillis = getWeeksAgo(1),
-            ), DataItem(
-                label = R.string.start_of_month,
-                count = filterByDate(getFromStartOfTheMonth()).size,
-                color = statsColors["month"]!!,
-                fromMillis = getFromStartOfTheMonth(),
-            ), DataItem(
-                label = R.string.last_month,
-                count = filterByDate(getMonthsAgo(1)).size,
-                color = statsColors["month"]!!,
-                fromMillis = getMonthsAgo(1),
-            )
+            DataItem(label = R.string.start_of_hour, count = countFrom(startOfHour), color = statsColors["hour"]!!, fromMillis = startOfHour),
+            DataItem(label = R.string.last_hour, count = countFrom(oneHourAgo), color = statsColors["hour"]!!, fromMillis = oneHourAgo),
+            DataItem(label = R.string.start_of_day, count = countFrom(startOfDay), color = statsColors["day"]!!, fromMillis = startOfDay),
+            DataItem(label = R.string.last_day, count = countFrom(oneDayAgo), color = statsColors["day"]!!, fromMillis = oneDayAgo),
+            DataItem(label = R.string.start_of_week, count = countFrom(startOfWeek), color = statsColors["week"]!!, fromMillis = startOfWeek),
+            DataItem(label = R.string.last_week, count = countFrom(oneWeekAgo), color = statsColors["week"]!!, fromMillis = oneWeekAgo),
+            DataItem(label = R.string.start_of_month, count = countFrom(startOfMonth), color = statsColors["month"]!!, fromMillis = startOfMonth),
+            DataItem(label = R.string.last_month, count = countFrom(oneMonthAgo), color = statsColors["month"]!!, fromMillis = oneMonthAgo),
         )
     }
 
-    private fun getStatistics(): Statistics? {
-        val filteredCalls = _uiState.value.filteredCalls
+    private fun computeStatistics(filteredCalls: List<CallLogEntry>): Statistics? {
+        if (filteredCalls.isEmpty()) return null
         val longestCall = filteredCalls.maxByOrNull { it.duration } ?: return null
-        val mostBusiestHour = filteredCalls.groupBy {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = it.date
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
-            calendar.timeInMillis
-        }.maxByOrNull { it.value.size }!!.key
-        val totalDurationStartOfHour = filteredCalls.filter {
-            it.date >= getFromStartOfTheHour()
-        }.sumBy { it.duration.toInt() }
-        val totalDurationStartOfDay = filteredCalls.filter {
-            it.date >= getFromStartOfTheDay()
-        }.sumBy { it.duration.toInt() }
-        val totalDurationStartOfWeek = filteredCalls.filter {
-            it.date >= getFromStartOfTheWeek()
-        }.sumBy { it.duration.toInt() }
-        val totalDurationStartOfMonth = filteredCalls.filter {
-            it.date >= getFromStartOfTheMonth()
-        }.sumBy { it.duration.toInt() }
+        val mostBusiestHour = filteredCalls
+            .groupBy { truncateToHour(it.date) }
+            .maxByOrNull { it.value.size }
+            ?.key ?: return null
         return Statistics(
             longestCall = longestCall,
             mostBusiestHour = mostBusiestHour,
-            totalDurationStartOfHour = totalDurationStartOfHour,
-            totalDurationStartOfDay = totalDurationStartOfDay,
-            totalDurationStartOfWeek = totalDurationStartOfWeek,
-            totalDurationStartOfMonth = totalDurationStartOfMonth,
+            totalDurationStartOfHour = filteredCalls.filter { it.date >= getFromStartOfTheHour() }.sumOf { it.duration.toInt() },
+            totalDurationStartOfDay = filteredCalls.filter { it.date >= getFromStartOfTheDay() }.sumOf { it.duration.toInt() },
+            totalDurationStartOfWeek = filteredCalls.filter { it.date >= getFromStartOfTheWeek() }.sumOf { it.duration.toInt() },
+            totalDurationStartOfMonth = filteredCalls.filter { it.date >= getFromStartOfTheMonth() }.sumOf { it.duration.toInt() },
         )
     }
 
+    private fun truncateToHour(millis: Long): Long = Calendar.getInstance().apply {
+        timeInMillis = millis
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
 
-    private fun filterCalls() {
-        val filteredCalls = _uiState.value.calls.filter { isValidCall(it) }
-        _uiState.value = _uiState.value.copy(
-            filteredCalls = filteredCalls,
-        )
-    }
-
-    private fun getCallsLog(
+    private suspend fun loadCalls(
         fromDateMillis: Long,
         toDateMillis: Long,
         context: Context,
-    ) {
-        val contentResolver: ContentResolver = context.contentResolver
-        val selection =
-            "${CallLog.Calls.DATE} >= ? AND ${CallLog.Calls.DATE} <= ?"
-        val selectionArgs =
-            arrayOf(fromDateMillis.toString(), toDateMillis.toString())
-        val sortOrder = "${CallLog.Calls.DATE} DESC"
+    ): LoadedCalls = withContext(Dispatchers.IO) {
+        val rangedCalls = queryCallsLog(
+            context = context,
+            selection = "${CallLog.Calls.DATE} >= ? AND ${CallLog.Calls.DATE} <= ?",
+            selectionArgs = arrayOf(fromDateMillis.toString(), toDateMillis.toString()),
+        )
+        val rawCalls = if (rangedCalls.isNotEmpty()) {
+            rangedCalls
+        } else {
+            Timber.w("Primary CallLog query returned no rows, retrying without selection filter")
+            queryCallsLog(
+                context = context,
+                selection = null,
+                selectionArgs = null,
+            )
+        }
+
+        val calls = rawCalls
+            .asSequence()
+            .filter { it.date in fromDateMillis..(toDateMillis + FUTURE_CALL_TOLERANCE_MS) }
+            .filter(::isPlausibleCall)
+            .filter { TrackedCallMatcher.matches(it.number, TRACKED_NUMBERS) }
+            .distinctBy(::callDedupKey)
+            .sortedByDescending(CallLogEntry::date)
+            .toList()
+
+        val hintLabel = when {
+            calls.isNotEmpty() -> null
+            Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true) -> R.string.call_log_xiaomi_hint
+            else -> R.string.call_log_no_matching_calls
+        }
+
+        Timber.d(
+            "Loaded ${calls.size} tracked calls after filtering ${rawCalls.size} raw CallLog rows"
+        )
+        LoadedCalls(
+            calls = calls,
+            hintLabel = hintLabel,
+        )
+    }
+
+    private suspend fun queryCallsLog(
+        context: Context,
+        selection: String?,
+        selectionArgs: Array<String>?,
+    ): List<CallLogEntry> = withContext(Dispatchers.IO) {
+        val results = mutableListOf<CallLogEntry>()
         val projection = arrayOf(
             CallLog.Calls.DATE,
             CallLog.Calls.NUMBER,
             CallLog.Calls.DURATION,
             CallLog.Calls.TYPE,
         )
-        val cursor = contentResolver.query(
-            CallLog.Calls.CONTENT_URI,
-            projection,
-            selection,
-            selectionArgs,
-            sortOrder,
-            null
-        )
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                val date = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE))
-                val number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER))
-                val duration = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DURATION))
-                val type = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.TYPE))
-                val callType = when (type) {
-                    CallLog.Calls.INCOMING_TYPE -> CallType.INCOMING
-                    CallLog.Calls.OUTGOING_TYPE -> CallType.OUTGOING
-                    else -> CallType.MISSED
-                }
 
-                val newCallLog = CallLogEntry(
-                    date = date,
-                    number = number,
-                    duration = duration,
-                    type = callType,
-                )
+        try {
+            context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                "${CallLog.Calls.DATE} DESC",
+            )?.use { cursor ->
+                val dateIdx = cursor.getColumnIndex(CallLog.Calls.DATE)
+                val numberIdx = cursor.getColumnIndex(CallLog.Calls.NUMBER)
+                val durationIdx = cursor.getColumnIndex(CallLog.Calls.DURATION)
+                val typeIdx = cursor.getColumnIndex(CallLog.Calls.TYPE)
 
-                _uiState.value = _uiState.value.copy(
-                    calls = _uiState.value.calls.plus(
-                        newCallLog.also {
-                            i("CallLogEntry: $it")
-                        }
+                while (cursor.moveToNext()) {
+                    results += CallLogEntry(
+                        date = cursor.getLongOrDefault(dateIdx),
+                        number = cursor.getStringOrEmpty(numberIdx),
+                        duration = cursor.getLongOrDefault(durationIdx).coerceAtLeast(0L),
+                        type = when (cursor.getIntOrDefault(typeIdx, CallLog.Calls.MISSED_TYPE)) {
+                            CallLog.Calls.INCOMING_TYPE -> CallType.INCOMING
+                            CallLog.Calls.OUTGOING_TYPE -> CallType.OUTGOING
+                            else -> CallType.MISSED
+                        },
                     )
-                )
+                }
             }
-            cursor.close()
+        } catch (error: SecurityException) {
+            Timber.e(error, "Missing permission while reading CallLog")
+        } catch (error: RuntimeException) {
+            Timber.e(error, "Failed to query CallLog")
         }
-        filterCalls()
+
+        Timber.d("Loaded ${results.size} raw calls from CallLog")
+        results
     }
 
-    private fun isValidCall(
-        callLogEntry: CallLogEntry,
-    ): Boolean {
-        val fromDuration = _uiState.value.fromDuration.takeIf { it > 0 }
-        val selectedCallTypes = _uiState.value.selectedCallTypes
-        return selectedCallTypes
-            .contains(callLogEntry.type)
-                && if (fromDuration != null) {
-            callLogEntry.duration >= fromDuration
-        } else {
-            true
-        } && callLogEntry.number in listOf("1230", "0533131310")
+    private fun isValidCall(entry: CallLogEntry): Boolean {
+        val minDuration = _uiState.value.fromDuration.takeIf { it > 0 }
+        return entry.type in _uiState.value.selectedCallTypes
+                && (minDuration == null || entry.duration >= minDuration)
+                && TrackedCallMatcher.matches(entry.number, TRACKED_NUMBERS)
     }
 
-
-    private fun getHoursAgo(hoursAgo: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.HOUR_OF_DAY, -hoursAgo)
-        return calendar.timeInMillis
+    private fun isPlausibleCall(entry: CallLogEntry): Boolean {
+        return entry.date > 0L && entry.number.isNotBlank()
     }
 
-    private fun getFromStartOfTheHour(): Long {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        return calendar.timeInMillis
+    private fun callDedupKey(entry: CallLogEntry): String {
+        val dedupedTimestamp = entry.date / 1000L
+        val numberKey = TrackedCallMatcher.comparableKey(entry.number)
+        return listOf(
+            dedupedTimestamp.toString(),
+            numberKey,
+            entry.duration.toString(),
+            entry.type.name,
+        ).joinToString("|")
     }
 
-    private fun getDaysAgo(daysAgo: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -daysAgo)
-        return calendar.timeInMillis
-    }
-
-    private fun getFromStartOfTheDay(): Long {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        return calendar.timeInMillis
-    }
-
-    private fun getWeeksAgo(weeksAgo: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.WEEK_OF_YEAR, -weeksAgo)
-        return calendar.timeInMillis
-    }
-
+    private fun getHoursAgo(n: Int) = Calendar.getInstance().apply { add(Calendar.HOUR_OF_DAY, -n) }.timeInMillis
+    private fun getFromStartOfTheHour() = Calendar.getInstance().apply {
+        set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+    private fun getDaysAgo(n: Int) = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -n) }.timeInMillis
+    private fun getFromStartOfTheDay() = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+    private fun getWeeksAgo(n: Int) = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, -n) }.timeInMillis
     private fun getFromStartOfTheWeek(): Long {
         val calendar = Calendar.getInstance()
-
-        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        val daysToSubtract = (currentDayOfWeek - Calendar.FRIDAY + 7) % 7
+        val daysToSubtract = (calendar.get(Calendar.DAY_OF_WEEK) - Calendar.FRIDAY + 7) % 7
         calendar.add(Calendar.DAY_OF_YEAR, -daysToSubtract)
-
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
-
         return calendar.timeInMillis
     }
+    private fun getMonthsAgo(n: Int) = Calendar.getInstance().apply { add(Calendar.MONTH, -n) }.timeInMillis
+    private fun getFromStartOfTheMonth() = Calendar.getInstance().apply {
+        set(Calendar.DAY_OF_MONTH, 1); set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
 
-
-    private fun getMonthsAgo(monthsAgo: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MONTH, -monthsAgo)
-        return calendar.timeInMillis
-    }
-
-    private fun getFromStartOfTheMonth(): Long {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.DAY_OF_MONTH, 1)
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        return calendar.timeInMillis
-    }
-
-    private fun filterByDate(
-        date: Long,
-    ): List<CallLogEntry> {
-        return _uiState.value.filteredCalls.filter {
-            it.date >= date
-        }
+    companion object {
+        private const val CALL_HISTORY_MONTHS = 12
+        private const val FUTURE_CALL_TOLERANCE_MS = 60_000L
+        private val TRACKED_NUMBERS = setOf("1230", "0533131310")
     }
 }
+
+private data class LoadedCalls(
+    val calls: List<CallLogEntry>,
+    val hintLabel: Int?,
+)
