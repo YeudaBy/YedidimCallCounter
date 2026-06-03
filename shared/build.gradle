@@ -1,20 +1,16 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.yeudaby.calls_counter.shared'
 version = 'unspecified'
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 test {

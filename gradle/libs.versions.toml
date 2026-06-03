@@ -20,6 +20,7 @@ material = "1.14.0"
 ui-text-google-fonts = "1.11.2"
 vico = "2.0.0-alpha.19"
 ksp = "2.3.2"
+logback = "1.5.34"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
@@ -53,6 +54,7 @@ material3 = { group = "androidx.compose.material3", name = "material3", version.
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -60,3 +62,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
