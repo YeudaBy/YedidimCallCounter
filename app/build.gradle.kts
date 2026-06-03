@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -6,16 +8,17 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.yeudaby.callscounter"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.yeudaby.callscounter"
         minSdk = 29
-        targetSdk = 33
+        targetSdk = 37
         versionCode = 9
         versionName = "2.0.1-4.5.26"
 
@@ -35,17 +38,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        buildConfig = true
     }
     packaging {
         resources {
@@ -54,43 +52,44 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
 dependencies {
 
+    // KTK
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.activity.compose)
+
+    // Compose
     implementation(platform(libs.compose.bom))
+    implementation(libs.activity.compose)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.foundation)
-    implementation(libs.androidx.ui.text.google.fonts)
 
-
-    // Timber
-    implementation(libs.timber)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Material
+    implementation(libs.material3)
+    implementation(libs.material)
+
 
     // Accompanist
     implementation(libs.accompanist.permissions)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics.ktx)
-    implementation(libs.firebase.crashlytics.ktx)
-    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
 
     // vico
     implementation(libs.vico.compose.m3)
@@ -104,6 +103,22 @@ dependencies {
     // room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
+    // Google fonts
+    implementation(libs.androidx.ui.text.google.fonts)
+
+    // Debug
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+
+    // Timber (debug tree)
+    implementation(libs.timber)
+
+    // Tests
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.ui.test.junit4)
 }
