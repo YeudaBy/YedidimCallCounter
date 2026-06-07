@@ -3,4 +3,4 @@ ktor:
     port: 8080
   application:
     modules:
-      - com.yeudaby.calls_counter.RoutingKt.configureRouting
+      - com.yeudaby.calls_counter.backend.RoutingKt.configureRouting

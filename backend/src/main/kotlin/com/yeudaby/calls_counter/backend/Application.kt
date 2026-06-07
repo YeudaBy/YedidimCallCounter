@@ -47,12 +47,16 @@ fun Application.configureDependencyInjection() {
 // 2. Database Connection (Exposed + Postgres)
 // ==========================================
 fun Application.configureDatabase() {
+    val dbUrl = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5432/your_database"
+    val dbUser = System.getenv("DB_USER") ?: "postgres"
+    val dbPassword = System.getenv("DB_PASSWORD") ?: "your_password"
+
     // Connects Exposed directly to your PostgreSQL instance
     Database.connect(
-        url = "jdbc:postgresql://localhost:5432/your_database",
+        url = dbUrl,
         driver = "org.postgresql.Driver",
-        user = "postgres",
-        password = "your_password"
+        user = dbUser,
+        password = dbPassword
     )
 }
 
@@ -70,10 +74,13 @@ fun Application.configureSecurity() {
         anyHost() // Production warning: replace with specific client domains
     }
 
+    val rateLimitLimit = System.getenv("RATE_LIMIT_REQUESTS")?.toIntOrNull() ?: 60
+    val rateLimitPeriod = System.getenv("RATE_LIMIT_PERIOD_SECONDS")?.toIntOrNull()?.seconds ?: 1.minutes
+
     // Rate Limiting Config
     install(RateLimit) {
         global {
-            rateLimiter(limit = 60, refillPeriod = 1.minutes)
+            rateLimiter(limit = rateLimitLimit, refillPeriod = rateLimitPeriod)
         }
     }
 }

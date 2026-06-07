@@ -1,116 +1,96 @@
 package com.yeudaby.callscounter.ui.theme
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.core.view.WindowCompat
-import com.yeudaby.callscounter.R
 
-val gfProvider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs,
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF006C4C),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF89F8C7),
+    onPrimaryContainer = Color(0xFF002114),
+    secondary = Color(0xFF4D6357),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFCFE9D9),
+    onSecondaryContainer = Color(0xFF092016),
+    tertiary = Color(0xFF3D6373),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFC1E8FB),
+    onTertiaryContainer = Color(0xFF001F29),
+    error = Color(0xFFBA1A1A),
+    errorContainer = Color(0xFFFFDAD6),
+    onError = Color(0xFFFFFFFF),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFFBFDF9),
+    onBackground = Color(0xFF191C1A),
+    surface = Color(0xFFFBFDF9),
+    onSurface = Color(0xFF191C1A),
 )
 
-// ── Font families ─────────────────────────────────────────────────────────────
-val InstrumentSerif = FontFamily(
-    Font(GoogleFont("Instrument Serif"), fontProvider = gfProvider),
-    Font(GoogleFont("Instrument Serif"), fontProvider = gfProvider, style = FontStyle.Italic),
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF6CDBAC),
+    onPrimary = Color(0xFF003826),
+    primaryContainer = Color(0xFF005138),
+    onPrimaryContainer = Color(0xFF89F8C7),
+    secondary = Color(0xFFB3CCBE),
+    onSecondary = Color(0xFF1F352A),
+    secondaryContainer = Color(0xFF354B40),
+    onSecondaryContainer = Color(0xFFCFE9D9),
+    tertiary = Color(0xFFA5CCDF),
+    onTertiary = Color(0xFF073543),
+    tertiaryContainer = Color(0xFF244C5B),
+    onTertiaryContainer = Color(0xFFC1E8FB),
+    error = Color(0xFFFFB4AB),
+    errorContainer = Color(0xFF93000A),
+    onError = Color(0xFF690005),
+    onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF191C1A),
+    onBackground = Color(0xFFE1E3DF),
+    surface = Color(0xFF191C1A),
+    onSurface = Color(0xFFE1E3DF),
 )
 
-val DmSans = FontFamily(
-    Font(GoogleFont("DM Sans"), fontProvider = gfProvider),
-)
-
-// Kept for any external usage
-val Tinos = FontFamily(
-    Font(GoogleFont("Tinos"), fontProvider = gfProvider),
-)
-
-val CustomTypography = Typography(
-    bodyLarge      = Typography().bodyLarge.copy(fontFamily = DmSans),
-    bodyMedium     = Typography().bodyMedium.copy(fontFamily = DmSans),
-    bodySmall      = Typography().bodySmall.copy(fontFamily = DmSans),
-    headlineLarge  = Typography().headlineLarge.copy(fontFamily = DmSans),
-    headlineMedium = Typography().headlineMedium.copy(fontFamily = DmSans),
-    headlineSmall  = Typography().headlineSmall.copy(fontFamily = DmSans),
-    titleLarge     = Typography().titleLarge.copy(fontFamily = DmSans),
-    titleMedium    = Typography().titleMedium.copy(fontFamily = DmSans),
-    titleSmall     = Typography().titleSmall.copy(fontFamily = DmSans),
-    labelLarge     = Typography().labelLarge.copy(fontFamily = DmSans),
-    labelMedium    = Typography().labelMedium.copy(fontFamily = DmSans),
-    labelSmall     = Typography().labelSmall.copy(fontFamily = DmSans),
-)
-
-/**
- * Main app theme.
- *
- * ┌─────────────────────────────────────────────────────────────────┐
- * │  To fully reskin the app, change [accent] to any Color.         │
- * │  Examples: AccentPurple (default), AccentAmber, AccentTeal …    │
- * └─────────────────────────────────────────────────────────────────┘
- */
 @Composable
 fun CallsCounterTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    accent: Color = AccentTeal,
-    content: @Composable () -> Unit,
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
 ) {
-    val appColors = if (darkTheme) darkAppColors(accent) else lightAppColors(accent)
-
-    val colorScheme = if (darkTheme) {
-        darkColorScheme(
-            primary          = appColors.accent,
-            background       = appColors.background,
-            surface          = appColors.surface,
-            surfaceVariant   = appColors.surface2,
-            outline          = appColors.border,
-            onBackground     = appColors.text,
-            onSurface        = appColors.text,
-            onSurfaceVariant = appColors.muted,
-            error            = appColors.missed,
-        )
-    } else {
-        lightColorScheme(
-            primary          = appColors.accent,
-            background       = appColors.background,
-            surface          = appColors.surface,
-            surfaceVariant   = appColors.surface2,
-            outline          = appColors.border,
-            onBackground     = appColors.text,
-            onSurface        = appColors.text,
-            onSurfaceVariant = appColors.muted,
-            error            = appColors.missed,
-        )
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
     }
-
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = appColors.background.toArgb()
+            window.statusBarColor = Color.Transparent.toArgb()
+            WindowCompat.setDecorFitsSystemWindows(window, false)
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
-    CompositionLocalProvider(LocalAppColors provides appColors) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography  = CustomTypography,
-            content     = content,
-        )
-    }
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography(),
+        content = content
+    )
 }

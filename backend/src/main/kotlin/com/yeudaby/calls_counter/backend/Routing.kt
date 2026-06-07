@@ -1,8 +1,6 @@
 package com.yeudaby.calls_counter.backend
 
 
-import com.yeudaby.calls_counter.shared.top.District
-import com.yeudaby.calls_counter.shared.top.Top
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
@@ -22,12 +20,6 @@ fun Application.configureRouting() {
             call.respond(mapOf("userId" to userParam.id, "status" to "fetched"))
         }
 
-        get("/top") {
-            val mocks = listOf(Top(
-                district = District.JERUSALEM,
-
-            ))
-        }
 
 //        // Guarded Resource Routes under basic authentication
 //        authenticate("auth-basic") {

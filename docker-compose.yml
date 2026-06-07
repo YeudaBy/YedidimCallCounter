@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: calls_counter_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: calls_counter
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/yeudaby/calls-counter-backend:latest
+    container_name: calls_counter_backend
+    restart: always
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/calls_counter
+      DB_USER: postgres
+      DB_PASSWORD: postgres_password
+      RATE_LIMIT_REQUESTS: 60
+      RATE_LIMIT_PERIOD_SECONDS: 60
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
