@@ -19,5 +19,7 @@ data class User(
     val region: Region,
     val dispatcherNumber: String,
     val role: Role,
-    val fcmToken: String? = null
+    val fcmToken: String? = null,
+    val weeklyGoal: Int = 40,
+    val isAnonymous: Boolean = false
 )

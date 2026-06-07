@@ -1,89 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Call Counter</string>
-    <string name="calls">Calls</string>
-    <string name="only_from_15_seconds_duration">Only from 15 seconds duration</string>
-    <string name="stats">Statistics</string>
-    <string name="last_hour">Last hour</string>
-    <string name="today">Today</string>
-    <string name="this_week">This week</string>
-    <string name="filters">Filters</string>
-    <string name="filters_description">In this section you can configure what will take in place when counting down your calls.</string>
-    <string name="permission_request">We need to read your calls log to count your calls:</string>
-    <string name="permission_button">Go for it</string>
-    <string name="call_types">"Call Types: "</string>
-    <string name="incoming">Incoming</string>
-    <string name="outgoing">Outgoing</string>
-    <string name="missed">missed</string>
-    <string name="duration">Duration: %1$s</string>
-    <string name="last_2_hours">Last two hours</string>
-    <string name="last_day">Last 24 hours</string>
-    <string name="last_2_days">Last two days</string>
-    <string name="last_week">Last week</string>
-    <string name="last_2_weeks">Last two weeks</string>
-    <string name="last_month">Last month</string>
-    <string name="app_version">App version: %1$s</string>
-    <string name="app_description">This app will count your calls to or from \'Yedidim\' call center. \nYou can filter by call type, display your statics and more.</string>
-    <string name="app_author">Created by Yeuda Arie - 1883</string>
-    <string name="app_author_email">My Email</string>
-    <string name="app_author_email_address" translatable="false">YeudaBorodyanski@gmail.com</string>
-    <string name="app_author_site">My Website</string>
-    <string name="app_author_site_address" translatable="false">https://yeudaby.com</string>
-    <string name="app_github_address" translatable="false">https://github.com/YeudaBy/YedidimCallCounter</string>
-    <string name="app_github">App code in GitHub</string>
-    <string name="info">Info</string>
-    <string name="start_of_hour">Start of the hour</string>
-    <string name="start_of_day">Start of the day</string>
-    <string name="start_of_week">Start of the week</string>
-    <string name="start_of_month">Start of the month</string>
-    <string name="calls_per_day">Calls per day</string>
-    <string name="from_duration">Calls from X seconds</string>
-    <string name="privacy_policy_url" translatable="false">https://github.com/YeudaBy/YedidimCallCounter/blob/main/PRIVACY.md</string>
-    <string name="privacy_policy">Privacy Policy</string>
-    <string name="latest_releases_url" translatable="false">https://github.com/YeudaBy/YedidimCallCounter/releases/latest</string>
-    <string name="latest_releases">Check for updates</string>
-    <string name="seconds_helper_text">This may take a few seconds to load…</string>
-    <string name="share">share</string>
-    <string name="share_text">Hey!\n\nI just wanted to share an app for Yedidim dispatchers that can help you track your call count during your volunteer shifts.\n\nCheck it out now!</string>
+    <string name="app_name">Yedidim Call Counter</string>
+    <string name="home">Home</string>
+    <string name="leaderboard">Leaderboard</string>
+    
+    <!-- Permissions Screen -->
+    <string name="permissions_title">Welcome to Yedidim!</string>
+    <string name="permissions_subtitle">To get started, we need a few permissions to help you track your calls effectively.</string>
+    <string name="permission_call_log_title">Call Log (Required)</string>
+    <string name="permission_call_log_desc">Allows us to automatically count how many calls you make to the center. Without this, the app cannot function.</string>
+    <string name="permission_phone_title">Make Calls (Recommended)</string>
+    <string name="permission_phone_desc">Allows you to quickly dial the center directly from the app.</string>
+    <string name="permission_notifications_title">Notifications (Recommended)</string>
+    <string name="permission_notifications_desc">Receive weekly summaries, nudges, and updates about your progress.</string>
+    <string name="btn_grant_permissions">Grant Permissions</string>
+    <string name="btn_continue">Continue</string>
+    <string name="permissions_denied_error">Call Log permission is required to use this app. Please enable it in Settings.</string>
 
-    <!-- Call Log Permission -->
-    <string name="call_log_permission_request">We need access to your call log to better track your service calls.</string>
-    <string name="call_log_permission_button">Allow Call Log Access</string>
-    <string name="open_settings_button">Open Settings</string>
+    <!-- Home Screen -->
+    <string name="home_calls_this_week">Calls this week</string>
+    <string name="home_longest_call">Longest Call</string>
+    <string name="home_avg_call">Avg. Call Time</string>
+    <string name="home_seconds_suffix">sec</string>
+    
+    <!-- Leaderboard Screen -->
+    <string name="leaderboard_title">Top 10 Volunteers</string>
+    <string name="leaderboard_syncing">Syncing with server...</string>
+    <string name="leaderboard_sync_success">Sync successful! Showing top volunteers.</string>
+    
+    <!-- General -->
+    <string name="error_prefix">Error: </string>
+    <string name="error_no_internet">Network error: Cannot sync without an internet connection.</string>
 
-    <!-- Notifications Permission -->
-    <string name="notification_permission_request">We recommend enabling notifications to receive updates.</string>
-    <string name="notification_permission_button">Enable Notifications</string>
-
-    <!-- Skip Button -->
-    <string name="skip_text">Skip</string>
-
-    <string name="call_log_permission_request_settings">
-        Call log access is required for proper functionality. Please enable it in app settings.
-    </string>
+    <!-- Settings Screen -->
     <string name="settings">Settings</string>
-    <string name="welcome" translatable="false">Welcome!</string>
-    <string name="weekly_goal_progress">Weekly goal progress</string>
-    <string name="goal_reached">Goal reached!</string>
-    <string name="share_week_progress">Share weekly progress</string>
-    <string name="week_goal_title">Weekly goal</string>
-    <string name="week_goal_description">Set the number of calls you want to reach each week. Your progress banner updates automatically from this saved goal.</string>
-    <string name="week_goal_current">Current goal: %1$d calls</string>
-    <string name="week_goal_input_label">Weekly goal</string>
-    <string name="week_goal_input_hint">Enter a positive number of calls.</string>
-    <string name="week_goal_invalid">Please enter a valid goal.</string>
-    <string name="save_week_goal">Save weekly goal</string>
-    <string name="week_goal_preset">Set goal to %1$d calls</string>
-    <string name="week_goal_share_text">This week I\'m at %1$d out of %2$d calls in my goal (%3$d%%).</string>
-    <string name="week_goal_share_reached_text">I reached my weekly goal with %1$d out of %2$d calls this week (%3$d%%)!</string>
-    <string name="minimum_duration_seconds">Minimum duration (seconds)</string>
-    <string name="monitored_hotline">Monitored hotline</string>
-    <string name="yedidim_hotline">Yedidim national hotline</string>
-    <string name="total_calls_last_30_days">total calls in last 30 days</string>
-    <string name="no_calls_match_filters">No calls match the current filters.</string>
-    <string name="no_statistics_available">No statistics available.</string>
-    <string name="total_matching_calls">Total matching calls</string>
-    <string name="call_log_no_matching_calls">No matching calls were found in the selected history window.</string>
-    <string name="call_log_xiaomi_hint">No matching calls were found. On Xiaomi devices, also allow Call log access in the phone\'s Security or Permissions settings.</string>
-    <string name="this_month">This month\n</string>
-
+    <string name="settings_personal_info">Personal Information</string>
+    <string name="settings_name">Name</string>
+    <string name="settings_dispatcher_number">Dispatcher Number</string>
+    <string name="settings_region">Region</string>
+    <string name="settings_goals">Goals</string>
+    <string name="settings_weekly_goal">Weekly Goal</string>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_anonymous">Anonymous Mode</string>
+    <string name="settings_anonymous_desc">Hide your name from the leaderboard. Your data will not be sent to the server.</string>
+    <string name="settings_save">Save Changes</string>
+    <string name="settings_saved">Settings saved successfully!</string>
+    <string name="region_jerusalem">Jerusalem</string>
+    <string name="region_north">North</string>
+    <string name="region_south">South</string>
+    <string name="region_center">Center</string>
 </resources>

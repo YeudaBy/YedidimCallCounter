@@ -1,84 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ספירת שיחות</string>
-    <string name="calls">שיחות</string>
-    <string name="only_from_15_seconds_duration">החל מ15 שניות בלבד</string>
-    <string name="stats">נתונים</string>
-    <string name="last_hour">בשעה האחרונה</string>
-    <string name="today">היום</string>
-    <string name="this_week">השבוע</string>
-    <string name="filters">מסננים</string>
-    <string name="filters_description">באמצעות שינוי הגדרות אלו תוכלו להגדיר מה ייספר לכם באפליקציה כשיחות.</string>
-    <string name="permission_request">על מנת לספור את השיחות שלך אני זקוק להרשאה המבוקשת:</string>
-    <string name="permission_button">סבבה, לך על זה</string>
-    <string name="call_types">סוגי שיחות:</string>
-    <string name="incoming">נכנסות</string>
-    <string name="outgoing">יוצאות</string>
-    <string name="missed">לא נענו</string>
-    <string name="duration">אורך:  %1$s</string>
-    <string name="last_2_hours">בשעתיים האחרונות</string>
-    <string name="last_day">ביממה האחרונה</string>
-    <string name="last_2_days">ביומיים האחרונים</string>
-    <string name="last_week">בשבוע האחרון</string>
-    <string name="last_2_weeks">בשבועיים האחרונים</string>
-    <string name="last_month">בחודש האחרון</string>
-    <string name="app_version">גרסת האפליקציה: %1$s</string>
-    <string name="app_description">אפליקציה הזו תספור את השיחות שלכם מ ו/או אל מוקד ידידים. \nתוכלו לסנן את השיחות לפי סוגים, להציג את הנתונים לפי זמנים ועוד. \nשימו לב, המידע מתבסס על יומן השיחות במכשיר, ויכולות להיווצר תקלות בסנכרון בינו לבין מערכת המוקד. כמו״כ - בטאב המסננים תוכלו להגדיר את מינימום הזמן בשניות של השיחות שברצונכם לספור. \nבלחיצה על כרטיס מידע בטאב הנתונים, תוכלו לשתף את הכרטיס מחוץ לאפליקציה, מחכים לכם בפורומים!</string>
-    <string name="app_author">נוצר על ידי יהודה אריה - 1883</string>
-    <string name="app_author_email">המייל שלי</string>
-    <string name="app_author_site">האתר שלי</string>
-    <string name="app_github">קוד האפליקציה בגיטאהב</string>
-    <string name="info">מידע</string>
-    <string name="start_of_hour">מתחילת השעה</string>
-    <string name="start_of_day">מתחילת היום</string>
-    <string name="start_of_week">מתחילת השבוע</string>
-    <string name="start_of_month">מתחילת החודש</string>
-    <string name="from_duration">שיחות החל מ- שניות</string>
-    <string name="calls_per_day">שיחות לפי ימים</string>
-    <string name="privacy_policy">מדיניות פרטיות</string>
-    <string name="latest_releases">בדוק עדכונים</string>
-    <string name="seconds_helper_text">יתכן ויקח מספר שניות עד שהמידע יטען…</string>
-    <string name="share">שתף</string>
-    <string name="share_text">היי!  רק רציתי לשתף איתך אפליקציה למוקדני ידידים שיכולה לעזור לך לעקוב אחרי כמות השיחות שלך במהלך ההתנדבות.  תנסה עכשיו!</string>
+    <string name="app_name">מונה שיחות ידידים</string>
+    <string name="home">בית</string>
+    <string name="leaderboard">מובילים</string>
+    
+    <!-- Permissions Screen -->
+    <string name="permissions_title">ברוכים הבאים לידידים!</string>
+    <string name="permissions_subtitle">כדי שנוכל להתחיל, נצטרך מספר הרשאות שיעזרו לנו לעקוב אחרי השיחות שלך בצורה אוטומטית.</string>
+    <string name="permission_call_log_title">יומן שיחות (חובה)</string>
+    <string name="permission_call_log_desc">מאפשר לנו לספור אוטומטית את כמות השיחות למוקד. ללא הרשאה זו האפליקציה לא יכולה לתפקד.</string>
+    <string name="permission_phone_title">ביצוע שיחות (מומלץ)</string>
+    <string name="permission_phone_desc">מאפשר לך לחייג ולהתחבר למוקד בקליק אחד ישירות מתוך האפליקציה.</string>
+    <string name="permission_notifications_title">התראות (מומלץ)</string>
+    <string name="permission_notifications_desc">לקבלת סיכומים שבועיים, דירבונים ועדכונים חשובים על ההתקדמות שלך.</string>
+    <string name="btn_grant_permissions">הענק הרשאות</string>
+    <string name="btn_continue">המשך</string>
+    <string name="permissions_denied_error">הרשאת יומן השיחות היא חובה. אנא אשר אותה בהגדרות המכשיר.</string>
 
-    <!-- יומן שיחות -->
-    <string name="call_log_permission_request">אנחנו זקוקים להרשאת גישה ליומן השיחות כדי לעקוב אחר קריאות השירות שלך בצורה מיטבית.</string>
-    <string name="call_log_permission_button">אפשר גישה ליומן שיחות</string>
-    <string name="open_settings_button">פתח הגדרות</string>
+    <!-- Home Screen -->
+    <string name="home_calls_this_week">שיחות השבוע</string>
+    <string name="home_longest_call">השיחה הארוכה ביותר</string>
+    <string name="home_avg_call">ממוצע זמן שיחה</string>
+    <string name="home_seconds_suffix">שניות</string>
+    
+    <!-- Leaderboard Screen -->
+    <string name="leaderboard_title">10 המוקדנים המובילים</string>
+    <string name="leaderboard_syncing">מסנכרן נתונים מול השרת...</string>
+    <string name="leaderboard_sync_success">הסנכרון הצליח! מציג את המובילים.</string>
+    
+    <!-- General -->
+    <string name="error_prefix">שגיאה: </string>
+    <string name="error_no_internet">שגיאת רשת: לא ניתן להסתנכרן מול השרת ללא חיבור לאינטרנט.</string>
 
-    <!-- התראות -->
-    <string name="notification_permission_request">אנחנו ממליצים לאפשר התראות כדי לקבל עדכונים שוטפים.</string>
-    <string name="notification_permission_button">אפשר התראות</string>
-
-    <!-- כפתור דילוג -->
-    <string name="skip_text">דלג</string>
-
-    <string name="call_log_permission_request_settings">
-    גישה ליומן השיחות נדרשת עבור הפונקציות הנדרשות של האפליקציה. אנא אפשר את הגישה בהגדרות האפליקציה.
-</string>
+    <!-- Settings Screen -->
     <string name="settings">הגדרות</string>
-    <string name="weekly_goal_progress">התקדמות היעד השבועי</string>
-    <string name="goal_reached">היעד הושג!</string>
-    <string name="share_week_progress">שתף התקדמות שבועית</string>
-    <string name="week_goal_title">יעד שבועי</string>
-    <string name="week_goal_description">הגדר את מספר השיחות שברצונך להגיע אליו בכל שבוע. פס ההתקדמות יתעדכן אוטומטית לפי היעד השמור.</string>
-    <string name="week_goal_current">היעד הנוכחי: %1$d שיחות</string>
-    <string name="week_goal_input_label">יעד שבועי</string>
-    <string name="week_goal_input_hint">הזן מספר חיובי של שיחות.</string>
-    <string name="week_goal_invalid">אנא הזן יעד תקין.</string>
-    <string name="save_week_goal">שמור יעד שבועי</string>
-    <string name="week_goal_preset">הגדר יעד של %1$d שיחות</string>
-    <string name="week_goal_share_text">השבוע אני על %1$d מתוך %2$d שיחות ביעד שלי (%3$d%%).</string>
-    <string name="week_goal_share_reached_text">השגתי את היעד השבועי שלי עם %1$d מתוך %2$d שיחות השבוע (%3$d%%)!</string>
-    <string name="minimum_duration_seconds">משך מינימלי (שניות)</string>
-    <string name="monitored_hotline">מספרים שנמדדים</string>
-    <string name="yedidim_hotline">המוקד הארצי של ידידים</string>
-    <string name="total_calls_last_30_days">סך השיחות ב-30 הימים האחרונים</string>
-    <string name="no_calls_match_filters">אין שיחות שתואמות למסננים הנוכחיים.</string>
-    <string name="no_statistics_available">אין נתונים זמינים.</string>
-    <string name="total_matching_calls">סך כל השיחות התואמות</string>
-    <string name="call_log_no_matching_calls">לא נמצאו שיחות תואמות בחלון ההיסטוריה שנבחר.</string>
-    <string name="call_log_xiaomi_hint">לא נמצאו שיחות תואמות. במכשירי Xiaomi יש לאפשר גם גישה ליומן השיחות דרך הגדרות האבטחה או ההרשאות של הטלפון.</string>
-    <string name="this_month">החודש</string>
-
+    <string name="settings_personal_info">מידע אישי</string>
+    <string name="settings_name">שם מלא</string>
+    <string name="settings_dispatcher_number">מספר מוקדן</string>
+    <string name="settings_region">מחוז</string>
+    <string name="settings_goals">יעדים</string>
+    <string name="settings_weekly_goal">יעד שיחות שבועי</string>
+    <string name="settings_privacy">פרטיות</string>
+    <string name="settings_anonymous">מצב אנונימי</string>
+    <string name="settings_anonymous_desc">מסתיר אותך מטבלת המובילים. הנתונים שלך לא יישלחו כלל לשרת.</string>
+    <string name="settings_save">שמור שינויים</string>
+    <string name="settings_saved">ההגדרות נשמרו בהצלחה!</string>
+    <string name="region_jerusalem">ירושלים</string>
+    <string name="region_north">צפון</string>
+    <string name="region_south">דרום</string>
+    <string name="region_center">מרכז</string>
 </resources>
