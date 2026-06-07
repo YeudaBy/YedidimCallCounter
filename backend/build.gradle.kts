@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
 
-    kotlin("plugin.serialization") version "2.3.21" // Required for kotlinx.serialization
+    alias(libs.plugins.kotlinSerialization)
 }
 
 group = "com.yeudaby.calls_counter"
