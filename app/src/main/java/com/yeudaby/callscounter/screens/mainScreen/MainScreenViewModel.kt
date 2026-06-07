@@ -12,6 +12,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yeudaby.callscounter.R
+import com.yeudaby.callscounter.data.calls.CallsResolverImpl
 import com.yeudaby.callscounter.data.calls.TrackedCallMatcher
 import com.yeudaby.callscounter.data.model.CallLogEntry
 import com.yeudaby.callscounter.data.model.CallType
@@ -202,100 +203,6 @@ class MainScreenViewModel : ViewModel() {
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }.timeInMillis
-
-    private suspend fun loadCalls(
-        fromDateMillis: Long,
-        toDateMillis: Long,
-        context: Context,
-    ): LoadedCalls = withContext(Dispatchers.IO) {
-        val rangedCalls = queryCallsLog(
-            context = context,
-            selection = "${CallLog.Calls.DATE} >= ? AND ${CallLog.Calls.DATE} <= ?",
-            selectionArgs = arrayOf(fromDateMillis.toString(), toDateMillis.toString()),
-        )
-        val rawCalls = if (rangedCalls.isNotEmpty()) {
-            rangedCalls
-        } else {
-            Timber.w("Primary CallLog query returned no rows, retrying without selection filter")
-            queryCallsLog(
-                context = context,
-                selection = null,
-                selectionArgs = null,
-            )
-        }
-
-        val calls = rawCalls
-            .asSequence()
-            .filter { it.date in fromDateMillis..(toDateMillis + FUTURE_CALL_TOLERANCE_MS) }
-            .filter(::isPlausibleCall)
-            .filter { TrackedCallMatcher.matches(it.number, TRACKED_NUMBERS) }
-            .distinctBy(::callDedupKey)
-            .sortedByDescending(CallLogEntry::date)
-            .toList()
-
-        val hintLabel = when {
-            calls.isNotEmpty() -> null
-            Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true) -> R.string.call_log_xiaomi_hint
-            else -> R.string.call_log_no_matching_calls
-        }
-
-        Timber.d(
-            "Loaded ${calls.size} tracked calls after filtering ${rawCalls.size} raw CallLog rows"
-        )
-        LoadedCalls(
-            calls = calls,
-            hintLabel = hintLabel,
-        )
-    }
-
-    private suspend fun queryCallsLog(
-        context: Context,
-        selection: String?,
-        selectionArgs: Array<String>?,
-    ): List<CallLogEntry> = withContext(Dispatchers.IO) {
-        val results = mutableListOf<CallLogEntry>()
-        val projection = arrayOf(
-            CallLog.Calls.DATE,
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.DURATION,
-            CallLog.Calls.TYPE,
-        )
-
-        try {
-            context.contentResolver.query(
-                CallLog.Calls.CONTENT_URI,
-                projection,
-                selection,
-                selectionArgs,
-                "${CallLog.Calls.DATE} DESC",
-            )?.use { cursor ->
-                val dateIdx = cursor.getColumnIndex(CallLog.Calls.DATE)
-                val numberIdx = cursor.getColumnIndex(CallLog.Calls.NUMBER)
-                val durationIdx = cursor.getColumnIndex(CallLog.Calls.DURATION)
-                val typeIdx = cursor.getColumnIndex(CallLog.Calls.TYPE)
-
-                while (cursor.moveToNext()) {
-                    results += CallLogEntry(
-                        date = cursor.getLongOrDefault(dateIdx),
-                        number = cursor.getStringOrEmpty(numberIdx),
-                        duration = cursor.getLongOrDefault(durationIdx).coerceAtLeast(0L),
-                        type = when (cursor.getIntOrDefault(typeIdx, CallLog.Calls.MISSED_TYPE)) {
-                            CallLog.Calls.INCOMING_TYPE -> CallType.INCOMING
-                            CallLog.Calls.OUTGOING_TYPE -> CallType.OUTGOING
-                            else -> CallType.MISSED
-                        },
-                    )
-                }
-            }
-        } catch (error: SecurityException) {
-            Timber.e(error, "Missing permission while reading CallLog")
-        } catch (error: RuntimeException) {
-            Timber.e(error, "Failed to query CallLog")
-        }
-
-        Timber.d("Loaded ${results.size} raw calls from CallLog")
-        results
-    }
 
     private fun isValidCall(entry: CallLogEntry): Boolean {
         val minDuration = _uiState.value.fromDuration.takeIf { it > 0 }
