@@ -1,4 +1,4 @@
-FROM gradle:8.7.0-jdk21 AS build
+FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /home/gradle/src
 
@@ -6,9 +6,13 @@ WORKDIR /home/gradle/src
 COPY shared /home/gradle/src/shared
 COPY backend /home/gradle/src/backend
 COPY gradle /home/gradle/src/gradle
+COPY gradlew /home/gradle/src/
 COPY gradle.properties /home/gradle/src/
 COPY build.gradle.kts /home/gradle/src/
 COPY settings.gradle.kts /home/gradle/src/settings_original.gradle.kts
+
+# Make gradlew executable
+RUN chmod +x gradlew
 
 # Create a settings.gradle.kts that excludes the :app module to avoid Android SDK requirements
 RUN echo 'pluginManagement { \n\
@@ -34,7 +38,7 @@ include(":backend") \n\
 ' > settings.gradle.kts
 
 # Build the fat jar
-RUN gradle :backend:buildFatJar --no-daemon
+RUN ./gradlew :backend:buildFatJar --no-daemon
 
 # Run stage
 FROM eclipse-temurin:21-jre
@@ -45,9 +49,6 @@ RUN mkdir /app
 COPY --from=build /home/gradle/src/backend/build/libs/*-all.jar /app/backend.jar
 
 # Define default environment variables
-ENV DB_URL=jdbc:postgresql://db:5432/calls_counter
-ENV DB_USER=postgres
-ENV DB_PASSWORD=postgres
 ENV RATE_LIMIT_REQUESTS=60
 ENV RATE_LIMIT_PERIOD_SECONDS=60
 
